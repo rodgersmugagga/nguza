@@ -1,0 +1,81 @@
+{
+  "name": "Nguza Mbarara",
+  "short_name": "Nguza",
+  "description": "Nguza — Uganda's agriculture marketplace to buy and sell crops, livestock, farm inputs, equipment and services.",
+  "lang": "en-UG",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#1f2937",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "260x260",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": [
+    "shopping",
+    "agriculture",
+    "local",
+    "business"
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.jpg",
+      "sizes": "540x720",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/og-image.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "View Crops",
+      "short_name": "Crops",
+      "description": "Browse crop listings",
+      "url": "/search?category=Crops",
+      "icons": [
+        {
+          "src": "/favicon.png",
+          "sizes": "260x260",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "View Livestock",
+      "short_name": "Livestock",
+      "description": "Browse livestock listings",
+      "url": "/search?category=Livestock",
+      "icons": [
+        {
+          "src": "/favicon.png",
+          "sizes": "260x260",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "View Inputs",
+      "short_name": "Inputs",
+      "description": "Browse agricultural inputs",
+      "url": "/search?category=Agricultural Inputs",
+      "icons": [
+        {
+          "src": "/favicon.png",
+          "sizes": "260x260",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

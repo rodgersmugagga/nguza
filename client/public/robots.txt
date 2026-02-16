@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Optional: block backend routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /user/
+
+# Sitemap URL
+Sitemap: https://harvemart.onrender.com/sitemap.xml
