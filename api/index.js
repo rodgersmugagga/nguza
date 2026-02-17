@@ -8,8 +8,6 @@ import cartRouter from './routes/cart.route.js';
 import orderRouter from './routes/order.route.js';
 import adminRouter from './routes/admin.route.js';
 import wishlistRouter from './routes/wishlist.route.js';
-import listingRouter from './routes/listing.route.js';
-import Listing from './models/listing.model.js';
 import User from './models/user.model.js';
 import Product from './models/product.model.js';
 import cors from 'cors';
@@ -100,7 +98,6 @@ app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/wishlist", wishlistRouter);
-app.use("/api/listing", listingRouter);
 
 // Import and add reference routes
 import referenceRouter from './routes/reference.route.js';
@@ -127,7 +124,7 @@ mongoose.connect(process.env.MONGO, {
   .then(() => {
     console.log('Connected to MongoDB');
 
-    Promise.all([Listing.syncIndexes(), User.syncIndexes(), Product.syncIndexes()])
+    Promise.all([User.syncIndexes(), Product.syncIndexes()])
       .then(res => console.log('Indexes synchronized:', res.map(r => Object.keys(r || {}))))
       .catch(err => console.error('Error syncing indexes:', err));
   })

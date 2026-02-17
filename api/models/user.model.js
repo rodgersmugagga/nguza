@@ -10,6 +10,18 @@ const userSchema = new mongoose.Schema({
     avatar: { type: String, default: "https://res.cloudinary.com/dnj7dtnvx/image/upload/v1763294361/vecteezy_user-avatar-ui-button_13907861_j7b38y.jpg" },
     role: { type: String, enum: ['user', 'seller', 'admin'], default: 'user' },
     isSeller: { type: Boolean, default: false },
+    vendorProfile: {
+        businessName: { type: String, trim: true },
+        businessDescription: { type: String, trim: true },
+        businessAddress: { type: String, trim: true },
+        businessLogo: { type: String },
+        taxId: { type: String },
+        verificationStatus: {
+            type: String,
+            enum: ['none', 'pending', 'verified', 'rejected'],
+            default: 'none'
+        }
+    },
     isAdmin: { type: Boolean, default: false },
     isBanned: { type: Boolean, default: false },
 }, { timestamps: true });

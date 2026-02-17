@@ -2,20 +2,19 @@ import express from 'express';
 import {
   getAdminStats,
   getAllUsers,
-  getAllListings,
   deleteUser,
-  deleteListing,
   // Enhanced User Management
   updateUserDetails,
   toggleBanUser,
   changeUserRole,
   getUserActivity,
-  // Enhanced Listing Management
-  approveListing,
-  rejectListing,
-  updateListingDetails,
-  toggleFeatureListing,
-  bulkApproveListings,
+  // Product Moderation / Management
+  approveProduct,
+  rejectProduct,
+  getAllProductsAdmin,
+  deleteProductAdmin,
+  updateProductDetailsAdmin,
+  toggleFeatureProduct,
   // Enhanced Order Management
   updateOrderStatus,
   cancelOrder,
@@ -30,14 +29,10 @@ const router = express.Router();
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
-// ============================================
-// STATS & OVERVIEW
-// ============================================
+// Stats
 router.get('/stats', getAdminStats);
 
-// ============================================
-// USER MANAGEMENT
-// ============================================
+// User Management
 router.get('/users', getAllUsers);
 router.get('/user/:id/activity', getUserActivity);
 router.put('/user/:id', updateUserDetails);
@@ -45,20 +40,15 @@ router.put('/user/:id/ban', toggleBanUser);
 router.put('/user/:id/role', changeUserRole);
 router.delete('/user/:id', deleteUser);
 
-// ============================================
-// LISTING MANAGEMENT
-// ============================================
-router.get('/listings', getAllListings);
-router.put('/listing/:id/approve', approveListing);
-router.put('/listing/:id/reject', rejectListing);
-router.put('/listing/:id', updateListingDetails);
-router.put('/listing/:id/feature', toggleFeatureListing);
-router.post('/listings/bulk-approve', bulkApproveListings);
-router.delete('/listing/:id', deleteListing);
+// Product Management
+router.get('/products', getAllProductsAdmin);
+router.put('/products/:id/approve', approveProduct);
+router.put('/products/:id/reject', rejectProduct);
+router.put('/products/:id', updateProductDetailsAdmin);
+router.put('/products/:id/feature', toggleFeatureProduct);
+router.delete('/products/:id', deleteProductAdmin);
 
-// ============================================
-// ORDER MANAGEMENT
-// ============================================
+// Order Management
 router.get('/orders', getAllOrders);
 router.put('/order/:id/status', updateOrderStatus);
 router.put('/order/:id/cancel', cancelOrder);

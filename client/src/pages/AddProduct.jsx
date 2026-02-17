@@ -7,7 +7,7 @@ import LocationSelector from '../components/LocationSelector';
 import FieldsContainer from '../components/FieldsContainer';
 import { getFieldsForSubcategory } from '../utils/subcategoryFields';
 
-export default function CreateListing() {
+export default function AddProduct() {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -93,7 +93,7 @@ export default function CreateListing() {
       selectedFiles.forEach(item => fd.append('images', item.file));
 
       const apiBase = import.meta.env.VITE_API_URL || '';
-      const res = await fetch(`${apiBase}/api/listing/upload`, {
+      const res = await fetch(`${apiBase}/api/products/upload`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${currentUser?.token || ''}` },
         body: fd,
@@ -159,7 +159,7 @@ export default function CreateListing() {
         userRef: currentUser?.user?._id,
       };
 
-      const res = await fetch(`${apiBase}/api/listing/create`, {
+      const res = await fetch(`${apiBase}/api/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,8 +176,8 @@ export default function CreateListing() {
         return;
       }
 
-      const newId = data.listing?._id || data._id;
-      if (newId) navigate(`/listing/${newId}`);
+      const newId = data.product?._id || data._id;
+      if (newId) navigate(`/product/${newId}`);
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -187,13 +187,13 @@ export default function CreateListing() {
   return (
     <main className='max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6'>
       <Helmet>
-        <title>Post Agriculture Listing | Nguza - Uganda's Agriculture Marketplace</title>
-        <meta name="description" content="Post your agriculture listing in Uganda. Sell crops, livestock, inputs, equipment, or offer agricultural services." />
-        <meta name="keywords" content="post agriculture listing Uganda, sell crops, sell livestock, agricultural services Uganda" />
+        <title>Post Agriculture Product | Nguza - Uganda's Agriculture Marketplace</title>
+        <meta name="description" content="Post your agriculture product in Uganda. Sell crops, livestock, inputs, equipment, or offer agricultural services." />
+        <meta name="keywords" content="post agriculture product Uganda, sell crops, sell livestock, agricultural services Uganda" />
       </Helmet>
 
       <h1 className='text-2xl sm:text-3xl font-bold text-ui-primary mb-6'>
-        Post Your Agriculture Listing
+        Post Your Agriculture Product
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -226,7 +226,7 @@ export default function CreateListing() {
             <div className="space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-ui-muted mb-2">
-                  Listing Title <span className="text-red-500">*</span>
+                  Product Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -249,7 +249,7 @@ export default function CreateListing() {
                   id="description"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Describe your listing in detail..."
+                  placeholder="Describe your product in detail..."
                   maxLength={1000}
                   minLength={20}
                   required
@@ -429,7 +429,7 @@ export default function CreateListing() {
               disabled={loading}
               className="w-full py-4 btn-primary rounded-lg font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
             >
-              {loading ? 'Creating Listing...' : 'Post Listing'}
+              {loading ? 'Creating Product...' : 'Post Product'}
             </button>
           </div>
         )}

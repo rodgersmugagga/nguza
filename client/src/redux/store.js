@@ -2,22 +2,20 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // uses localStorage by default
 import userReducer from "./user/userSlice.js";
-import listingsReducer from './listings/listingsSlice.js';
+import productsReducer from './products/productsSlice.js';
 import filtersReducer from './filters/filtersSlice.js';
 import wishlistReducer from './wishlist/wishlistSlice.js';
 import cartReducer from './cart/cartSlice.js';
 import orderReducer from './orders/orderSlice.js';
-import productReducer from './products/productSlice.js';
 
-// Combine all reducers (you can add more later)
+// Combine all reducers
 const rootReducer = combineReducers({
   user: userReducer,
-  listings: listingsReducer,
+  products: productsReducer,
   filters: filtersReducer,
   wishlist: wishlistReducer,
   cart: cartReducer,
   order: orderReducer,
-  product: productReducer,
 });
 
 // Configuration for redux-persist

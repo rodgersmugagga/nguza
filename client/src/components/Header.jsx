@@ -36,7 +36,7 @@ export default function Header() {
     const fetchSuggestions = async () => {
       if (searchTerm.length < 2) { setSuggestions([]); return; }
       try {
-        const res = await fetch(`/api/listing/suggestions?query=${searchTerm}`);
+        const res = await fetch(`/api/products/suggestions?query=${searchTerm}`);
         const data = await res.json();
         setSuggestions(Array.isArray(data) ? data : []);
       } catch (error) { console.error(error); }
@@ -45,7 +45,6 @@ export default function Header() {
     return () => clearTimeout(t);
   }, [searchTerm]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e) => { if (catRef.current && !catRef.current.contains(e.target)) setShowCatDropdown(false); };
     document.addEventListener('mousedown', handler);
@@ -53,67 +52,85 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50">
-      {/* ─── Top Bar ─── Emerald-900 */}
-      <div className="bg-emerald-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-[11px] py-1.5">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1 text-emerald-300">
+    <header className="sticky top-0 z-50 shadow-sm">
+      {/* ─── Top Bar (Desktop Only) ─── */}
+      <div className="hidden sm:block bg-emerald-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-[11px] py-1.5 font-medium tracking-wide">
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-1.5 text-emerald-300">
               <FaMapMarkerAlt className="text-[10px]" /> Deliver to Uganda
             </span>
-            <Link to="/order-history" className="hover:text-amber-400 transition-colors hidden sm:flex items-center gap-1">
-              <FaMapMarkerAlt className="text-[10px]" /> Farm Order Tracking
+            <Link to="/order-history" className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+              <FaBoxOpen className="text-[10px]" /> Track Order
             </Link>
-            <Link to="/create-listing" className="hover:text-amber-400 transition-colors hidden sm:inline">Sell on Nguza</Link>
+            <Link to="/register-vendor" className="hover:text-amber-400 transition-colors">Sell on Nguza</Link>
           </div>
-          <div className="flex items-center gap-4">
-            <Link to="/about" className="hover:text-amber-400 transition-colors">Help</Link>
+          <div className="flex items-center gap-6">
+            <Link to="/about" className="hover:text-amber-400 transition-colors">Help Center</Link>
             {currentUser?.user?.isAdmin && (
-              <Link to="/admin-dashboard" className="text-amber-400 font-bold flex items-center gap-1">
+              <Link to="/admin-dashboard" className="text-amber-400 font-bold flex items-center gap-1.5">
                 <FaShieldAlt className="text-[10px]" /> Admin
               </Link>
             )}
             {currentUser ? (
-              <Link to="/profile" className="hover:text-amber-400 transition-colors flex items-center gap-1">
-                <FaUser className="text-[10px]" />
-                Hi, {currentUser.user?.username?.split(' ')[0] || 'User'}
-              </Link>
+              <span className="flex items-center gap-1.5 uppercase font-bold text-emerald-100">
+                <FaUser className="text-[10px]" /> {currentUser.user?.username?.split(' ')[0]}
+              </span>
             ) : (
-              <Link to="/sign-in" className="hover:text-amber-400 transition-colors">Sign In</Link>
+              <Link to="/sign-in" className="hover:text-amber-400 transition-colors font-bold">Sign In</Link>
             )}
           </div>
         </div>
       </div>
 
-      {/* ─── Main Header ─── Emerald-800 */}
-      <div className="bg-emerald-800">
-        <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center gap-3 sm:gap-5">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
-            <img src="/logo.png" alt="Nguza Logo" className="h-8 w-auto sm:h-10 group-hover:scale-105 transition-transform" />
-            <span className="font-black text-xl sm:text-2xl text-white tracking-tight">Nguza</span>
-          </Link>
+      {/* ─── Main Header ─── */}
+      <div className="bg-emerald-800 pb-2 sm:pb-0">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
 
-          {/* ─── Amazon-style Search with Category Dropdown ─── */}
-          <form onSubmit={handleSubmit} className="flex-1 max-w-2xl relative">
-            <div className="flex items-stretch rounded-lg overflow-hidden ring-2 ring-transparent focus-within:ring-amber-400 focus-within:ring-offset-2 focus-within:ring-offset-emerald-800 transition-all bg-white shadow-sm">
-              {/* Category Selector */}
-              <div ref={catRef} className="relative hidden sm:block">
+          {/* Logo and Cart (Mobile Layout) */}
+          <div className="w-full sm:w-auto flex items-center justify-between gap-4">
+            <Link to="/" className="flex items-center gap-2 group">
+              <img src="/logo.png" alt="Nguza" className="h-8 w-auto sm:h-9 group-hover:scale-105 transition-transform" />
+              <span className="font-black text-xl sm:text-2xl text-white tracking-tighter">Nguza</span>
+            </Link>
+
+            <div className="flex items-center gap-3 sm:hidden">
+              <Link to="/cart" className="relative p-2 text-white hover:text-amber-400 transition-colors">
+                <FaShoppingCart className="text-xl" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-amber-400 text-emerald-900 text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-emerald-800">
+                    {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                  </span>
+                )}
+              </Link>
+              {currentUser && (
+                <Link to="/profile">
+                  <img className="rounded-full h-8 w-8 object-cover border-2 border-emerald-600" src={currentUser?.user?.avatar || '/favicon.svg'} alt="profile" />
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* Search Bar - Full width on mobile */}
+          <form onSubmit={handleSubmit} className="w-full flex-1 max-w-2xl relative">
+            <div className="flex items-stretch rounded-xl overflow-hidden bg-white shadow-soft focus-within:ring-2 focus-within:ring-amber-400 transition-all">
+              {/* Category Dropdown (Desktop Only) */}
+              <div ref={catRef} className="relative hidden md:block">
                 <button
                   type="button"
                   onClick={() => setShowCatDropdown(!showCatDropdown)}
-                  className="h-full px-3 bg-gray-100 border-r border-gray-200 text-gray-700 text-xs font-semibold flex items-center gap-1 hover:bg-gray-200 transition-colors whitespace-nowrap"
+                  className="h-full px-4 bg-gray-50 border-r border-gray-100 text-gray-600 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-gray-100 transition-colors"
                 >
                   {searchCategory} <FaChevronDown className="text-[8px]" />
                 </button>
                 {showCatDropdown && (
-                  <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50 min-w-[160px] animate-in fade-in slide-in-from-top-1">
+                  <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 min-w-[180px] animate-in">
                     {SEARCH_CATEGORIES.map(cat => (
                       <button
                         key={cat}
                         type="button"
                         onClick={() => { setSearchCategory(cat); setShowCatDropdown(false); }}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-emerald-50 transition-colors ${searchCategory === cat ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700'}`}
+                        className={`w-full text-left px-4 py-3 text-xs font-semibold hover:bg-emerald-50 transition-colors ${searchCategory === cat ? 'bg-emerald-50 text-emerald-700' : 'text-gray-600'}`}
                       >
                         {cat}
                       </button>
@@ -122,97 +139,102 @@ export default function Header() {
                 )}
               </div>
 
-              {/* Search Input */}
               <input
                 type="text"
-                placeholder="Search crops, livestock, equipment..."
-                className="flex-1 px-4 py-2.5 text-sm text-gray-800 focus:outline-none"
+                placeholder="Search farm fresh products..."
+                className="flex-1 px-4 py-2.5 sm:py-3 text-sm text-gray-800 placeholder-gray-400 bg-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
 
-              {/* Search Button */}
-              <button type="submit" className="px-5 bg-amber-400 hover:bg-amber-500 text-emerald-900 transition-colors">
+              <button type="submit" className="px-5 bg-amber-400 hover:bg-amber-500 text-emerald-900 transition-colors border-l border-amber-300">
                 <FaSearch className="text-lg" />
               </button>
             </div>
 
-            {/* Suggestions Dropdown */}
+            {/* Suggestions */}
             {suggestions.length > 0 && searchTerm && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden z-50 max-h-80 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 max-h-[70vh] overflow-y-auto">
                 {suggestions.map((item) => (
-                  <div
+                  <Link
                     key={item._id}
-                    onClick={() => { navigate(`/listing/${item._id}`); setSearchTerm(''); setSuggestions([]); }}
-                    className="p-3 hover:bg-emerald-50 cursor-pointer flex items-center gap-3 transition-colors border-b border-gray-100 last:border-0"
+                    to={`/product/${item._id}`}
+                    onClick={() => { setSearchTerm(''); setSuggestions([]); }}
+                    className="p-4 hover:bg-emerald-50 cursor-pointer flex items-center gap-4 transition-colors border-b border-gray-50 last:border-0"
                   >
-                    <img src={item.imageUrls?.[0]} alt={item.name} className="w-10 h-10 rounded object-cover bg-gray-100" />
-                    <div>
-                      <h4 className="font-semibold text-gray-900 text-sm line-clamp-1">{item.name}</h4>
-                      <p className="text-xs text-gray-500">{item.category}</p>
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                      <img src={item.imageUrls?.[0]} alt="" className="w-full h-full object-cover" />
                     </div>
-                  </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-sm line-clamp-1">{item.name}</h4>
+                      <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">{item.category}</p>
+                    </div>
+                  </Link>
                 ))}
               </div>
             )}
           </form>
 
-          {/* ─── Right Nav Icons ─── */}
-          <div className="flex items-center gap-1 sm:gap-4 flex-shrink-0 text-white">
+          {/* Desktop Navigation Icons */}
+          <div className="hidden sm:flex items-center gap-2 sm:gap-6 flex-shrink-0">
             {currentUser && (
-              <>
-                <Link to="/wishlist" className="flex flex-col items-center p-1.5 hover:text-amber-400 transition-colors" title="Wishlist">
+              <div className="flex items-center gap-4">
+                <Link to="/wishlist" className="flex flex-col items-center group text-emerald-100 hover:text-amber-400 transition-colors">
                   <FaHeart className="text-lg" />
-                  <span className="text-[10px] hidden sm:block mt-0.5">Wishlist</span>
+                  <span className="text-[10px] font-bold mt-1 uppercase tracking-tighter">Wishlist</span>
                 </Link>
-                <Link to="/order-history" className="flex flex-col items-center p-1.5 hover:text-amber-400 transition-colors" title="Orders">
-                  <FaBoxOpen className="text-lg" />
-                  <span className="text-[10px] hidden sm:block mt-0.5">Orders</span>
-                </Link>
-                <Link to="/seller-dashboard" className="flex flex-col items-center p-1.5 hover:text-amber-400 transition-colors" title="Sell">
+                <Link to="/seller-dashboard" className="flex flex-col items-center group text-emerald-100 hover:text-amber-400 transition-colors">
                   <FaStore className="text-lg" />
-                  <span className="text-[10px] hidden sm:block mt-0.5">Sell</span>
+                  <span className="text-[10px] font-bold mt-1 uppercase tracking-tighter">Sell</span>
                 </Link>
-              </>
+              </div>
             )}
-            <Link to="/cart" className="flex flex-col items-center p-1.5 hover:text-amber-400 transition-colors relative" title="Cart">
+
+            <Link to="/cart" className="flex flex-col items-center group text-emerald-100 hover:text-amber-400 transition-colors relative">
               <div className="relative">
-                <FaShoppingCart className="text-lg" />
+                <FaShoppingCart className="text-xl" />
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2.5 bg-amber-400 text-emerald-900 text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-3 bg-white text-emerald-900 text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                     {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] hidden sm:block mt-0.5">Cart</span>
+              <span className="text-[10px] font-bold mt-1 uppercase tracking-tighter">My Cart</span>
             </Link>
+
             {currentUser && (
-              <Link to="/profile" className="flex-shrink-0 ml-1">
-                <img className="rounded-full h-8 w-8 object-cover border-2 border-emerald-600 hover:border-amber-400 transition-colors" src={currentUser?.user?.avatar || '/favicon.svg'} alt="profile" />
+              <Link to="/profile" className="flex-shrink-0 h-10 w-10 border-2 border-emerald-600 rounded-full overflow-hidden hover:border-amber-400 transition-all p-0.5">
+                <img className="rounded-full h-full w-full object-cover" src={currentUser?.user?.avatar || '/favicon.svg'} alt="profile" />
               </Link>
             )}
           </div>
         </div>
       </div>
 
-      {/* ─── Category Nav Bar ─── Emerald-700 (Jumia-style) */}
-      <div className="bg-emerald-700 text-white overflow-x-auto scrollbar-hide">
-        <div className="max-w-7xl mx-auto px-4 flex items-center gap-1">
-          <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="flex items-center gap-2 px-3 py-2 hover:bg-emerald-600 rounded text-sm font-semibold transition-colors">
-            <FaBars className="text-xs" /> All Categories
+      {/* ─── Secondary Nav (Categories) ─── */}
+      <div className="bg-emerald-700 text-white overflow-x-auto scrollbar-hide shadow-inner">
+        <div className="max-w-7xl mx-auto px-4 flex items-center gap-1 sm:gap-2">
+          <button className="flex items-center gap-2 px-4 py-3 hover:bg-emerald-600 rounded-none text-[11px] font-black uppercase tracking-widest transition-colors whitespace-nowrap border-r border-emerald-600/50">
+            <FaBars className="text-xs" /> Categories
           </button>
-          <div className="h-5 w-px bg-emerald-600 mx-1" />
-          {['Crops', 'Livestock', 'Farm Inputs', 'Machinery', 'Fresh Harvest', 'Services'].map(cat => (
-            <Link
-              key={cat}
-              to={`/category/${encodeURIComponent(cat === 'Farm Inputs' ? 'Agricultural Inputs' : cat === 'Machinery' ? 'Equipment & Tools' : cat === 'Fresh Harvest' ? 'Crops' : cat)}`}
-              className="px-3 py-2 hover:bg-emerald-600 rounded text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
-            >
-              {cat}
-            </Link>
-          ))}
-          <Link to="/create-listing" className="ml-auto px-3 py-2 hover:bg-emerald-600 rounded text-xs sm:text-sm font-semibold text-amber-400 transition-colors whitespace-nowrap">
-            + Post Listing
+
+          <div className="flex items-center h-full mask-fade-right">
+            {['Crops', 'Livestock', 'Farm Inputs', 'Machinery', 'Fresh Harvest', 'Services'].map(cat => (
+              <Link
+                key={cat}
+                to={`/category/${encodeURIComponent(cat === 'Farm Inputs' ? 'Agricultural Inputs' : cat === 'Machinery' ? 'Equipment & Tools' : cat === 'Fresh Harvest' ? 'Crops' : cat)}`}
+                className="px-4 py-3 hover:bg-emerald-600 text-[11px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap"
+              >
+                {cat}
+              </Link>
+            ))}
+          </div>
+
+          <Link
+            to={currentUser?.user?.role === 'seller' ? "/add-product" : "/register-vendor"}
+            className="ml-auto px-4 py-3 bg-amber-400 text-emerald-900 hover:bg-amber-500 text-[11px] font-black uppercase tracking-widest transition-colors whitespace-nowrap shadow-xl"
+          >
+            {currentUser?.user?.role === 'seller' ? "+ Post Product" : "Start Selling"}
           </Link>
         </div>
       </div>

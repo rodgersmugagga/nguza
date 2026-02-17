@@ -1,29 +1,25 @@
-import express from 'express'; 
-import { test, updateUser, updateAvatar, deleteUser, getListings, getUser } from '../controllers/user.controller.js';
+import express from 'express';
+import { test, updateUser, updateAvatar, deleteUser, getUserProducts, getUser, registerVendor } from '../controllers/user.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
-import upload from "../middlewares/multer.js";// Cloudinary upload
+import upload from "../middlewares/multer.js";
 import { validateObjectIdParam } from '../middlewares/validateObjectId.js';
 
 const router = express.Router();
 
 router.get('/test', test);
 
-// Update profile with optional avatar
+// Profile & Account
 router.patch('/update/:id', authMiddleware, validateObjectIdParam('id'), upload.single('avatar'), updateUser);
-
-// Update avatar only
 router.patch("/avatar", authMiddleware, upload.single("avatar"), updateAvatar);
-
-// Delete user account
 router.delete('/delete/:id', authMiddleware, validateObjectIdParam('id'), deleteUser);
 
-// Note: signout is handled in auth routes; removed incorrect mapping that called deleteUser.
+// Vendor Registration
+router.post('/register-vendor', authMiddleware, upload.single('businessLogo'), registerVendor);
 
-// Update profile with optional avatar
-router.get('/listings/:id', authMiddleware, validateObjectIdParam('id'), getListings);
+// User Products (Inventory)
+router.get('/products/:id', authMiddleware, validateObjectIdParam('id'), getUserProducts);
 
-// 
-router.get('/:id', authMiddleware, validateObjectIdParam('id'), getUser);
-
+// Public User Data
+router.get('/:id', validateObjectIdParam('id'), getUser);
 
 export default router;

@@ -3,36 +3,38 @@ import {
   getProducts,
   getProductById,
   createProduct,
+  updateProduct,
   deleteProduct,
   createProductReview,
   getTopProducts,
   getMyProducts,
   getSearchSuggestions,
+  promoteProduct,
+  trackContactClick
 } from '../controllers/product.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
-import multer from 'multer';
-
-// Multer setup for image uploads
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
-});
+import upload from '../middlewares/multer.js';
+import { validateObjectIdParam } from '../middlewares/validateObjectId.js';
 
 const router = express.Router();
 
-router.route('/')
-  .get(getProducts)
-  .post(authMiddleware, upload.array('images', 10), createProduct);
+// Public discovery
+router.get('/', getProducts);
+router.get('/top', getTopProducts);
+router.get('/suggestions', getSearchSuggestions);
+router.get('/:id', validateObjectIdParam('id'), getProductById);
 
-router.route('/top').get(getTopProducts);
-router.route('/myproducts').get(authMiddleware, getMyProducts);
-router.route('/suggestions').get(getSearchSuggestions);
+// Protected actions
+router.post('/', authMiddleware, upload.array('images', 10), createProduct);
+router.get('/view/myproducts', authMiddleware, getMyProducts);
+router.put('/:id', authMiddleware, validateObjectIdParam('id'), updateProduct);
+router.delete('/:id', authMiddleware, validateObjectIdParam('id'), deleteProduct);
 
-router.route('/:id/reviews').post(authMiddleware, createProductReview);
+// Interactions
+router.post('/:id/reviews', authMiddleware, validateObjectIdParam('id'), createProductReview);
+router.post('/:id/contact', validateObjectIdParam('id'), trackContactClick);
 
-router.route('/:id')
-  .get(getProductById)
-  .delete(authMiddleware, deleteProduct);
+// Promotion
+router.post('/:id/promote', authMiddleware, validateObjectIdParam('id'), promoteProduct);
 
 export default router;

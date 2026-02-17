@@ -10,16 +10,16 @@ export function prefetchAbout() {
   return import(/* webpackChunkName: "about" */ '../pages/About');
 }
 
-export function prefetchCreateListing() {
-  return import(/* webpackChunkName: "create-listing" */ '../pages/CreateListing');
+export function prefetchAddProduct() {
+  return import(/* webpackChunkName: "add-product" */ '../pages/AddProduct');
 }
 
 export function prefetchProfile() {
   return import(/* webpackChunkName: "profile" */ '../pages/Profile');
 }
 
-export function prefetchListing() {
-  return import(/* webpackChunkName: "listing" */ '../pages/Listing');
+export function prefetchProduct() {
+  return import(/* webpackChunkName: "product" */ '../pages/ProductDetails');
 }
 
 export function prefetchSearch() {

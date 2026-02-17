@@ -190,10 +190,18 @@ const productSchema = new Schema({
     default: 0
   },
 
-  // Status
+  // Moderation Status
+  moderationStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+    index: true
+  },
+
+  // Status (Inventory/Life cycle)
   status: {
     type: String,
-    enum: ['active', 'sold', 'expired', 'suspended', 'draft'],
+    enum: ['active', 'sold', 'out_of_stock', 'expired', 'suspended', 'draft'],
     default: 'active',
     index: true
   }

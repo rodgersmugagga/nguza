@@ -1,110 +1,104 @@
-const SITE_NAME = process.env.SITE_NAME || 'Agrova';
-const SITE_URL = process.env.SITE_URL || 'https://agrova.example.com';
+const SITE_URL = 'https://nguza.com';
 
-function slugify(text) {
-  if (!text) return '';
-  return text.toString().normalize('NFKD').replace(/[\u0000-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
-}
+/**
+ * Generates SEO metadata for agricultural products
+ * @param {string} category - Main category (Crops, Livestock, etc.)
+ * @param {string} subCategory - Sub-category (e.g. Grains, Cattle)
+ * @param {object} details - Specific attributes
+ * @param {object} location - City/Region info
+ * @param {string} productName - The actual title of the product
+ * @returns {object} { title, description, keywords, canonical, slug }
+ */
 
-function short(s, n) { return s ? s.substring(0, n) : ''; }
-
-function generateCropsSeo(subCategory, details = {}, location = {}, listingName = '') {
+function generateCropsSeo(subCategory, details = {}, location = {}, productName = '') {
   const district = location?.district || 'Uganda';
-  const crop = details?.cropType || subCategory || listingName || 'Produce';
-  const variety = details?.variety ? ` ${details.variety}` : '';
-  const title = short(`${crop}${variety} for sale in ${district} | ${SITE_NAME}`, 70);
-  const description = short(`Buy ${crop}${variety} in ${district}. ${details?.quantity ? `Available: ${details.quantity} ${details.unit || ''}. ` : ''}${details?.organic ? 'Organic produce. ' : ''}Find trusted sellers on ${SITE_NAME}.`, 160);
-  const keywords = [
-    `${crop} for sale`,
-    `${crop} in ${district}`,
-    `${subCategory}`,
-    ...(details?.variety ? [details.variety] : []),
-    ...(details?.organic ? ['organic'] : []),
-    'agriculture', 'produce for sale', district
-  ];
-  const slug = slugify(`${crop} ${variety} ${district}`);
-  const canonical = `${SITE_URL}/crops/${slug}`;
-  return { title, description, keywords, canonical, slug };
+  const crop = details?.cropType || subCategory || productName || 'Produce';
+  return {
+    title: `Buy ${crop} in ${district} | Fresh ${subCategory} - Nguza`,
+    description: `Get high-quality ${crop} from verified farmers in ${district}. Direct from the source, best prices in Uganda.`,
+    keywords: `${crop}, ${district}, agriculture Uganda, buy produce, ${subCategory}`,
+    canonical: `${SITE_URL}/product/`,
+    slug: 'product'
+  };
 }
 
-function generateLivestockSeo(subCategory, details = {}, location = {}, listingName = '') {
+function generateLivestockSeo(subCategory, details = {}, location = {}, productName = '') {
   const district = location?.district || 'Uganda';
-  const animal = details?.animalType || subCategory || listingName || 'Livestock';
-  const breed = details?.breed ? ` ${details.breed}` : '';
-  const title = short(`${animal}${breed} for sale in ${district} | ${SITE_NAME}`, 70);
-  const description = short(`Find ${animal}${breed} in ${district}. ${details?.quantity ? `Quantity: ${details.quantity}. ` : ''}${details?.healthStatus ? `${details.healthStatus}. ` : ''}Trusted sellers on ${SITE_NAME}.`, 160);
-  const keywords = [
-    `${animal} for sale`, `${animal} in ${district}`, ...(details?.breed ? [details.breed] : []), 'livestock', district
-  ];
-  const slug = slugify(`${animal} ${breed} ${district}`);
-  const canonical = `${SITE_URL}/livestock/${slug}`;
-  return { title, description, keywords, canonical, slug };
+  const animal = details?.animalType || subCategory || productName || 'Livestock';
+  return {
+    title: `${animal} for Sale in ${district} | Healthy Livestock - Nguza`,
+    description: `Find healthy ${animal} in ${district}. Browse listings for cattle, goats, poultry and more from trusted breeders.`,
+    keywords: `${animal}, livestock Uganda, poultry, cattle, ${district}`,
+    canonical: `${SITE_URL}/product/`,
+    slug: 'product'
+  };
 }
 
-function generateInputsSeo(subCategory, details = {}, location = {}, listingName = '') {
+function generateInputsSeo(subCategory, details = {}, location = {}, productName = '') {
   const district = location?.district || 'Uganda';
-  const product = details?.productName || subCategory || listingName || 'Input';
-  const title = short(`${product} available in ${district} | ${SITE_NAME}`, 70);
-  const description = short(`Buy ${product} in ${district}. ${details?.brand ? `Brand: ${details.brand}. ` : ''}${details?.quantity ? `Quantity: ${details.quantity} ${details.unit || ''}. ` : ''}Get certified inputs on ${SITE_NAME}.`, 160);
-  const keywords = [product.toLowerCase(), `${product} ${district}`, 'fertilizer', 'seeds', 'agricultural inputs', district];
-  const slug = slugify(`${product} ${district}`);
-  const canonical = `${SITE_URL}/inputs/${slug}`;
-  return { title, description, keywords, canonical, slug };
+  const product = details?.productName || subCategory || productName || 'Input';
+  return {
+    title: `${product} in ${district} | Agricultural Inputs - Nguza`,
+    description: `Quality ${subCategory} available in ${district}. Find seeds, fertilizers, and pest control for your farm.`,
+    keywords: `${product}, farm inputs, fertilizer, seeds Uganda, ${district}`,
+    canonical: `${SITE_URL}/product/`,
+    slug: 'product'
+  };
 }
 
-function generateEquipmentSeo(subCategory, details = {}, location = {}, listingName = '') {
+function generateEquipmentSeo(subCategory, details = {}, location = {}, productName = '') {
   const district = location?.district || 'Uganda';
-  const equipment = details?.equipmentType || subCategory || listingName || 'Equipment';
-  const title = short(`${equipment} for sale in ${district} | ${SITE_NAME}`, 70);
-  const description = short(`Buy ${equipment} in ${district}. ${details?.brand ? `Brand: ${details.brand}. ` : ''}${details?.condition ? `${details.condition}. ` : ''}Find reliable equipment on ${SITE_NAME}.`, 160);
-  const keywords = [equipment.toLowerCase(), `${equipment} ${district}`, 'agricultural equipment', district];
-  const slug = slugify(`${equipment} ${district}`);
-  const canonical = `${SITE_URL}/equipment/${slug}`;
-  return { title, description, keywords, canonical, slug };
+  const equipment = details?.equipmentType || subCategory || productName || 'Equipment';
+  return {
+    title: `${equipment} for Hire/Sale in ${district} | Farm Tools - Nguza`,
+    description: `Rent or buy ${equipment} in ${district}. Explore tractors, irrigation tools, and harvesting machinery.`,
+    keywords: `${equipment}, tractors Uganda, farm tools, irrigation, ${district}`,
+    canonical: `${SITE_URL}/product/`,
+    slug: 'product'
+  };
 }
 
-function generateServicesSeo(subCategory, details = {}, location = {}, listingName = '') {
+function generateServicesSeo(subCategory, details = {}, location = {}, productName = '') {
   const district = location?.district || 'Uganda';
-  const service = details?.serviceType || subCategory || listingName || 'Service';
-  const title = short(`${service} in ${district} | ${SITE_NAME}`, 70);
-  const description = short(`${service} available in ${district}. ${details?.priceModel ? `Price model: ${details.priceModel}. ` : ''}${details?.experience ? `Experience: ${details.experience}. ` : ''}Find trusted service providers on ${SITE_NAME}.`, 160);
-  const keywords = [service.toLowerCase(), `${service} ${district}`, 'agricultural services', district];
-  const slug = slugify(`${service} ${district}`);
-  const canonical = `${SITE_URL}/services/${slug}`;
-  return { title, description, keywords, canonical, slug };
+  const service = details?.serviceType || subCategory || productName || 'Service';
+  return {
+    title: `${service} Services in ${district} | Agri-Services - Nguza`,
+    description: `Professional ${service} in ${district}. Connect with experts for land prep, spraying, and veterinary care.`,
+    keywords: `${service}, farm services, vet services Uganda, ${district}`,
+    canonical: `${SITE_URL}/product/`,
+    slug: 'product'
+  };
 }
 
-export function generateSeo(category, subCategory, details = {}, location = {}, listingName = '') {
+export function generateSeo(category, subCategory, details = {}, location = {}, productName = '') {
   if (!category) {
     return {
-      title: `Agrova - Agriculture Marketplace`,
-      description: `Buy and sell crops, livestock, inputs, equipment and services across Uganda on Agrova.`,
-      keywords: ['agriculture', 'crops', 'livestock', 'agricultural inputs', 'equipment'],
-      canonical: `${SITE_URL}/listings`,
-      slug: 'listings'
+      title: 'Agricultural Marketplace | Nguza Uganda',
+      description: 'The leading marketplace for farmers and buyers in Uganda. Trade produce, livestock, and equipment.',
+      keywords: 'agriculture Uganda, farmers market, farm produce, livestock',
+      canonical: `${SITE_URL}/products`,
+      slug: 'products'
     };
   }
 
+  const cat = category?.toLowerCase();
   switch (category) {
     case 'Crops':
-      return generateCropsSeo(subCategory, details, location, listingName);
+      return generateCropsSeo(subCategory, details, location, productName);
     case 'Livestock':
-      return generateLivestockSeo(subCategory, details, location, listingName);
+      return generateLivestockSeo(subCategory, details, location, productName);
     case 'Agricultural Inputs':
-      return generateInputsSeo(subCategory, details, location, listingName);
+      return generateInputsSeo(subCategory, details, location, productName);
     case 'Equipment & Tools':
-      return generateEquipmentSeo(subCategory, details, location, listingName);
+      return generateEquipmentSeo(subCategory, details, location, productName);
     case 'Agricultural Services':
-      return generateServicesSeo(subCategory, details, location, listingName);
+      return generateServicesSeo(subCategory, details, location, productName);
     default:
       return {
-        title: `${subCategory || category} | ${SITE_NAME}`,
-        description: `Find ${subCategory || category} across Uganda on ${SITE_NAME}.`,
-        keywords: [category.toLowerCase(), 'agriculture', 'Uganda'],
-        canonical: `${SITE_URL}/${slugify(category)}/${slugify(subCategory || '')}`,
-        slug: slugify(`${category} ${subCategory || ''}`)
+        title: `${productName || subCategory} in ${location?.district || 'Uganda'} | Nguza`,
+        description: `Find ${productName || subCategory} and other agricultural items on Nguza.`,
+        canonical: `${SITE_URL}/product/`,
+        slug: 'product'
       };
   }
 }
-
-export default { generateSeo };

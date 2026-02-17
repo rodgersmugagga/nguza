@@ -45,7 +45,7 @@ export class CacheManager {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.storeName], 'readwrite');
       const store = transaction.objectStore(this.storeName);
-      
+
       const data = {
         key,
         value,
@@ -72,7 +72,7 @@ export class CacheManager {
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const result = request.result;
-        
+
         // Check if cache expired
         if (result && result.expiresAt > Date.now()) {
           resolve(result.value);
@@ -123,10 +123,10 @@ export class CacheManager {
  */
 export function generateResponsiveImageSrc(cloudinaryPublicId) {
   if (!cloudinaryPublicId) return '';
-  
+
   const cloudName = import.meta.env.VITE_CLOUDINARY_NAME || 'rodgers';
   const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload`;
-  
+
   return `
     ${baseUrl}/w_400,h_300,c_fill,q_auto,f_auto/${cloudinaryPublicId} 400w,
     ${baseUrl}/w_600,h_450,c_fill,q_auto,f_auto/${cloudinaryPublicId} 600w,
@@ -148,8 +148,8 @@ export async function prefetchListings() {
     if (cached) return; // Already cached
 
     // Fetch popular listings
-  // Backend listing endpoint is GET /api/listing
-  const response = await fetch('/api/listing?limit=10&sort=-createdAt');
+    // Backend listing endpoint is GET /api/listing
+    const response = await fetch('/api/listing?limit=10&sort=-createdAt');
     const data = await response.json();
 
     // Cache for 30 minutes

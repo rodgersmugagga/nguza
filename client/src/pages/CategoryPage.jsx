@@ -2,24 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaChevronLeft, FaAdjust, FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
-import { fetchListings } from '../redux/listings/listingsSlice.js';
+import { FaChevronLeft, FaAdjust, FaTimes, FaMapMarkerAlt, FaFilter, FaSortAmountDown } from 'react-icons/fa';
+import { fetchProducts } from '../redux/products/productsSlice.js';
 import { setCategory, setSubCategory, setFilter, clearFilters } from '../redux/filters/filtersSlice.js';
-import ListingItem from '../components/ListingItem.jsx';
-
-// Uganda districts with subcounties - Mobile First Data
-const DISTRICTS_DATA = [
-  { name: 'Kampala', subcounties: ['Central', 'Makindye', 'Nakawa', 'Rubaga', 'Kawempe', 'Kira'] },
-  { name: 'Wakiso', subcounties: ['Bukerere', 'Busujju', 'Entebbe', 'Kabula', 'Kakiri', 'Katikamu'] },
-  { name: 'Jinja', subcounties: ['Budadiri', 'Bugembe', 'Jinja City', 'Njeru', 'Portbell'] },
-  { name: 'Mukono', subcounties: ['Banda', 'Buikwe', 'Gaddafi', 'Kiganda', 'Kyetume', 'Mukono Municipality'] },
-  { name: 'Masaka', subcounties: ['Bukoto', 'Gomba', 'Kamengo', 'Kitaya', 'Masaka City'] },
-  { name: 'Fort Portal', subcounties: ['Bwamba', 'Burahya', 'Kabwoya', 'Rwenzori'] },
-  { name: 'Mbarara', subcounties: ['Buhweju', 'Kashari', 'Kabwohe', 'Mbarara City'] },
-  { name: 'Gulu', subcounties: ['Bardege-Layibi', 'Gulu City', 'Lamwo'] },
-  { name: 'Arua', subcounties: ['Arua City', 'Maracha', 'Terego', 'Yumbe'] },
-  { name: 'Soroti', subcounties: ['Amodat', 'Katakwi', 'Soroti City'] }
-];
+import ProductItem from '../components/ProductItem.jsx';
 
 const CATEGORIES = [
   { key: 'Crops', title: 'Crops & Produce', subs: ['Grains & Cereals', 'Legumes & Pulses', 'Vegetables', 'Fruits', 'Root Crops', 'Cash Crops'] },
@@ -33,47 +19,38 @@ export default function CategoryPage() {
   const { categoryKey } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const SITE_URL = import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://harvemart.onrender.com');
+  const SITE_URL = import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://nguza.com');
   const [priceRange, setPriceRange] = useState({ min: 0, max: 100000000 });
 
-  // Location State
   const [districts, setDistricts] = useState([]);
   const [subcounties, setSubcounties] = useState([]);
-  const [parishes, setParishes] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedSubcounty, setSelectedSubcounty] = useState('');
-  const [selectedParish, setSelectedParish] = useState('');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const apiBase = import.meta.env.VITE_API_URL || '';
-
   const category = CATEGORIES.find(c => c.key === categoryKey);
   const filters = useSelector(s => s.filters);
-  const { items: listings, status } = useSelector(s => s.listings || { items: [], status: 'idle' });
+  const { items: products, status, total } = useSelector(s => s.products || { items: [], status: 'idle', total: 0 });
   const loading = status === 'loading';
 
-  // Initialize category
   useEffect(() => {
     if (category) {
       dispatch(setCategory(category.key));
     }
   }, [category, dispatch]);
 
-  // Fetch districts
   useEffect(() => {
     const fetchDistricts = async () => {
       try {
         const res = await fetch(`${apiBase}/api/reference/districts`);
         const data = await res.json();
         if (data?.success) setDistricts(data.districts || []);
-      } catch (error) {
-        console.warn('Failed to fetch districts', error);
-      }
+      } catch (error) { console.warn(error); }
     };
     fetchDistricts();
   }, [apiBase]);
 
-  // Fetch subcounties
   useEffect(() => {
     const fetchSubcounties = async () => {
       if (!selectedDistrict) return setSubcounties([]);
@@ -81,35 +58,17 @@ export default function CategoryPage() {
         const res = await fetch(`${apiBase}/api/reference/districts/${encodeURIComponent(selectedDistrict)}/subcounties`);
         const data = await res.json();
         if (data?.success) setSubcounties(data.subcounties || []);
-      } catch (error) {
-        console.warn('Failed to fetch subcounties', error);
-      }
+      } catch (error) { console.warn(error); }
     };
     fetchSubcounties();
   }, [selectedDistrict, apiBase]);
 
-  // Fetch parishes
-  useEffect(() => {
-    const fetchParishes = async () => {
-      if (!selectedDistrict || !selectedSubcounty) return setParishes([]);
-      try {
-        const res = await fetch(`${apiBase}/api/reference/districts/${encodeURIComponent(selectedDistrict)}/subcounties/${encodeURIComponent(selectedSubcounty)}/parishes`);
-        const data = await res.json();
-        if (data?.success) setParishes(data.parishes || []);
-      } catch (error) {
-        console.warn('Failed to fetch parishes', error);
-      }
-    };
-    fetchParishes();
-  }, [selectedDistrict, selectedSubcounty, apiBase]);
-
-  // Fetch listings
   useEffect(() => {
     const params = {
       category: category?.key,
       subCategory: filters.subCategory !== 'all' ? filters.subCategory : undefined,
       sort: filters.sort,
-      limit: 20,
+      limit: 24,
       startIndex: 0,
       filters: {
         ...filters.filters,
@@ -117,19 +76,18 @@ export default function CategoryPage() {
         maxPrice: priceRange.max < 100000000 ? priceRange.max : undefined,
         district: selectedDistrict || undefined,
         subcounty: selectedSubcounty || undefined,
-        parish: selectedParish || undefined,
       },
     };
-    dispatch(fetchListings(params));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category?.key, filters.subCategory, filters.sort, priceRange.min, priceRange.max, selectedDistrict, selectedSubcounty, selectedParish]);
+    dispatch(fetchProducts(params));
+  }, [category?.key, filters.subCategory, filters.sort, priceRange.min, priceRange.max, selectedDistrict, selectedSubcounty, dispatch]);
 
   if (!category) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center p-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-ui-primary mb-4">Category Not Found</h1>
-          <button onClick={() => navigate('/')} className="btn-primary px-6 py-2 rounded-lg text-sm">Back to Home</button>
+        <div className="text-center p-8 bg-white rounded-3xl shadow-premium border border-gray-100">
+          <div className="text-6xl mb-4">🚜</div>
+          <h1 className="text-2xl font-black text-gray-800 mb-4 tracking-tight">Category Not Found</h1>
+          <button onClick={() => navigate('/')} className="btn-primary">Return to Marketplace</button>
         </div>
       </div>
     );
@@ -140,67 +98,27 @@ export default function CategoryPage() {
     priceRange.min > 0 || priceRange.max < 100000000 ? 1 : 0,
     selectedDistrict ? 1 : 0,
     selectedSubcounty ? 1 : 0,
-    selectedParish ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col pb-20 sm:pb-0">
       <Helmet>
-        <title>{category.title} | Nguza - Uganda Agriculture Marketplace</title>
+        <title>{category.title} | Nguza Marketplace</title>
         <meta name="description" content={`Browse ${category.title} on Nguza. Buy and sell agricultural products across Uganda.`} />
-        <link rel="canonical" href={SITE_URL + (typeof window !== 'undefined' ? window.location.pathname : `/category/${encodeURIComponent(category?.key || '')}`)} />
-        <meta property="og:title" content={`${category.title} | Nguza`} />
-        <meta property="og:site_name" content="Nguza - Uganda Agriculture Marketplace" />
-
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": `${category.title} | Nguza`,
-            "description": `Browse ${category.title} on Nguza. Buy and sell agricultural products across Uganda.`,
-            "url": SITE_URL + (typeof window !== 'undefined' ? window.location.pathname : `/category/${encodeURIComponent(category?.key || '')}`),
-            "mainEntity": {
-              "@type": "ItemList",
-              "itemListElement": listings.map((l, i) => ({
-                "@type": "ListItem",
-                "position": i + 1,
-                "url": SITE_URL + `/listing/${l._id}`
-              }))
-            }
-          })}
-        </script>
-
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": SITE_URL
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": category.title,
-                "item": SITE_URL + (typeof window !== 'undefined' ? window.location.pathname : `/category/${encodeURIComponent(category?.key || '')}`)
-              }
-            ]
-          })}
-        </script>
+        <link rel="canonical" href={SITE_URL + `/category/${encodeURIComponent(category?.key)}`} />
       </Helmet>
 
-      {/* MOBILE-FIRST HEADER */}
-      <div className="bg-white border-b border-ui sticky top-0 z-30">
-        <div className="px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-ui">
-          <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 rounded-full cursor-pointer active:scale-95 flex-shrink-0">
-            <FaChevronLeft size={18} className="text-ui-primary" />
-          </button>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-base sm:text-lg font-bold text-ui-primary truncate">{category.title}</h1>
-            <p className="text-xs sm:text-sm text-ui-muted">{listings.length} listings</p>
+      {/* ─── Sticky Mobile Header ─── */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-40 sm:z-30">
+        <div className="px-4 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
+              <FaChevronLeft size={18} className="text-emerald-700" />
+            </button>
+            <div>
+              <h1 className="text-base font-black text-gray-900 leading-none">{category.title}</h1>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{total} Verified Products</p>
+            </div>
           </div>
           {activeFilterCount > 0 && (
             <button
@@ -209,34 +127,33 @@ export default function CategoryPage() {
                 setPriceRange({ min: 0, max: 100000000 });
                 setSelectedDistrict('');
                 setSelectedSubcounty('');
-                setSelectedParish('');
               }}
-              className="md:hidden px-2 py-1 text-xs font-bold text-color-accent bg-white border border-color-accent rounded-full active:scale-95"
+              className="px-3 py-1.5 text-[10px] font-black text-red-500 uppercase tracking-widest border border-red-100 rounded-lg hover:bg-red-50"
             >
-              Clear
+              Reset
             </button>
           )}
         </div>
 
         {/* Subcategory Chips */}
-        <div className="px-3 sm:px-4 py-2 sm:py-3 overflow-x-auto scrollbar-hide border-b border-ui">
-          <div className="flex gap-2 min-w-min">
+        <div className="px-4 py-3 overflow-x-auto scrollbar-hide border-t border-gray-50">
+          <div className="flex gap-2 min-w-max">
             <button
               onClick={() => dispatch(setSubCategory('all'))}
-              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold whitespace-nowrap transition-all active:scale-95 text-xs sm:text-sm flex-shrink-0 ${filters.subCategory === 'all'
-                ? 'bg-color-primary text-white shadow-md'
-                : 'bg-white border-2 border-ui text-ui-primary hover:border-color-primary'
+              className={`px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${filters.subCategory === 'all'
+                ? 'bg-emerald-700 text-white shadow-lg'
+                : 'bg-gray-50 text-gray-400 hover:bg-emerald-50 hover:text-emerald-700'
                 }`}
             >
-              All
+              All Produce
             </button>
             {category.subs.map(sub => (
               <button
                 key={sub}
                 onClick={() => dispatch(setSubCategory(sub))}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold whitespace-nowrap transition-all active:scale-95 text-xs sm:text-sm flex-shrink-0 ${filters.subCategory === sub
-                  ? 'bg-color-primary text-white shadow-md shadow-green-200'
-                  : 'bg-white border border-ui text-ui-primary hover:border-color-primary hover:text-color-primary'
+                className={`px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${filters.subCategory === sub
+                  ? 'bg-emerald-700 text-white shadow-lg'
+                  : 'bg-gray-50 text-gray-400 hover:bg-emerald-50 hover:text-emerald-700'
                   }`}
               >
                 {sub}
@@ -244,263 +161,167 @@ export default function CategoryPage() {
             ))}
           </div>
         </div>
-
-        {/* Desktop Quick Filters */}
-        <div className="hidden md:flex px-4 py-3 items-center gap-3 border-t border-ui overflow-x-auto scrollbar-hide">
-          <select
-            value={selectedDistrict}
-            onChange={(e) => {
-              setSelectedDistrict(e.target.value);
-              setSelectedSubcounty('');
-              setSelectedParish('');
-            }}
-            className="px-3 py-2 border border-ui rounded-lg text-xs sm:text-sm focus-ring cursor-pointer flex-shrink-0"
-          >
-            <option value="">All Districts</option>
-            {districts.map(d => (
-              <option key={d._id || d.name} value={d.name}>{d.name}</option>
-            ))}
-          </select>
-
-          {selectedDistrict && (
-            <select
-              value={selectedSubcounty}
-              onChange={(e) => {
-                setSelectedSubcounty(e.target.value);
-                setSelectedParish('');
-              }}
-              className="px-3 py-2 border border-ui rounded-lg text-xs sm:text-sm focus-ring cursor-pointer flex-shrink-0"
-            >
-              <option value="">All Subcounties</option>
-              {subcounties.map(s => (
-                <option key={s._id || s.name || s} value={typeof s === 'string' ? s : s.name}>
-                  {typeof s === 'string' ? s : s.name}
-                </option>
-              ))}
-            </select>
-          )}
-
-          <select
-            value={filters.sort}
-            onChange={(e) => dispatch(setFilter({ key: 'sort', value: e.target.value }))}
-            className="px-3 py-2 border border-ui rounded-lg text-xs sm:text-sm focus-ring cursor-pointer flex-shrink-0"
-          >
-            <option value="-createdAt">Latest</option>
-            <option value="-regularPrice">Price: High→Low</option>
-            <option value="regularPrice">Price: Low→High</option>
-          </select>
-
-          {activeFilterCount > 0 && (
-            <button
-              onClick={() => {
-                dispatch(clearFilters());
-                setPriceRange({ min: 0, max: 100000000 });
-                setSelectedDistrict('');
-                setSelectedSubcounty('');
-                setSelectedParish('');
-              }}
-              className="ml-auto text-xs sm:text-sm text-color-primary font-semibold hover:underline flex-shrink-0"
-            >
-              Clear
-            </button>
-          )}
-        </div>
       </div>
 
-      {/* MAIN CONTENT */}
-      <div className="flex flex-col lg:flex-row gap-4 p-3 sm:p-4 flex-1">
+      {/* ─── Main Content ─── */}
+      <div className="flex flex-col lg:flex-row gap-6 p-4 max-w-7xl mx-auto w-full flex-1">
 
-        {/* Mobile Filter Toggle */}
-        <button
-          onClick={() => setIsFiltersOpen(true)}
-          className='lg:hidden w-full flex items-center justify-between px-4 py-3 bg-white text-ui-primary font-semibold rounded-lg shadow-sm active:scale-95 transition-transform'
-        >
-          <span className='flex items-center gap-2'>
-            <FaAdjust /> Filters & Sort
-          </span>
-        </button>
-
-        {/* Mobile Filter Drawer Overlay */}
-        {isFiltersOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={() => setIsFiltersOpen(false)}
-          />
-        )}
-
-        {/* Filter Sidebar - Drawer on Mobile, Sticky on Desktop */}
+        {/* Desktop Filter Sidebar */}
         <aside className={`
-            flex flex-col gap-3
-            fixed lg:sticky top-0 lg:top-44 left-0 h-full lg:h-fit z-50 lg:z-auto
-            w-3/4 max-w-xs lg:w-80
-            bg-white lg:bg-white
-            shadow-2xl lg:shadow-sm
-            p-4 lg:p-4
-            overflow-y-auto lg:overflow-visible
-            transition-transform duration-300 ease-in-out
-            rounded-none lg:rounded-lg
-            ${isFiltersOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-            lg:block
+            hidden lg:block w-72 h-fit sticky top-44
+            bg-white rounded-[2rem] shadow-premium p-8 border border-gray-100
           `}>
-
-          {/* Drawer Header */}
-          <div className="flex items-center justify-between mb-4 lg:hidden">
-            <h2 className="text-lg font-bold text-gray-800">Filters</h2>
-            <button
-              onClick={() => setIsFiltersOpen(false)}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <FaTimes size={20} />
-            </button>
-          </div>
-
-          <h3 className="hidden lg:block font-bold text-base text-ui-primary mb-4">Filters</h3>
-
-          <div className="space-y-5">
-            {/* District */}
+          <div className="space-y-8">
             <div>
-              <label className="text-sm font-semibold mb-2 flex items-center gap-1">
-                <FaMapMarkerAlt size={14} /> District
-              </label>
-              <select
-                value={selectedDistrict}
-                onChange={(e) => {
-                  setSelectedDistrict(e.target.value);
-                  setSelectedSubcounty('');
-                  setSelectedParish('');
-                }}
-                className="w-full px-3 py-2 border border-ui rounded-lg text-sm focus-ring cursor-pointer"
-              >
-                <option value="">All Districts</option>
-                {districts.map(d => (
-                  <option key={d._id || d.name} value={d.name}>{d.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Subcounty */}
-            <div>
-              <label className="text-sm font-semibold mb-2 flex items-center gap-1">
-                <FaMapMarkerAlt size={14} /> Subcounty
-              </label>
-              <select
-                value={selectedSubcounty}
-                onChange={(e) => {
-                  setSelectedSubcounty(e.target.value);
-                  setSelectedParish('');
-                }}
-                disabled={!selectedDistrict}
-                className={`w-full px-3 py-2 border border-ui rounded-lg text-sm focus-ring cursor-pointer ${!selectedDistrict ? 'opacity-50' : ''}`}
-              >
-                <option value="">All Subcounties</option>
-                {subcounties.map(s => (
-                  <option key={s._id || s.name || s} value={typeof s === 'string' ? s : s.name}>
-                    {typeof s === 'string' ? s : s.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Parish */}
-            <div>
-              <label className="text-sm font-semibold mb-2 flex items-center gap-1">
-                <FaMapMarkerAlt size={14} /> Parish
-              </label>
-              <select
-                value={selectedParish}
-                onChange={(e) => setSelectedParish(e.target.value)}
-                disabled={!selectedSubcounty}
-                className={`w-full px-3 py-2 border border-ui rounded-lg text-sm focus-ring cursor-pointer ${!selectedSubcounty ? 'opacity-50' : ''}`}
-              >
-                <option value="">All Parishes</option>
-                {parishes.map(p => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Price Range */}
-            <div>
-              <label className="text-sm font-semibold mb-3">Price Range</label>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={priceRange.min || ''}
-                    onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-ui rounded-lg text-sm"
-                  />
-                  <span>-</span>
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={priceRange.max === 100000000 ? '' : priceRange.max}
-                    onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value ? Number(e.target.value) : 100000000 })}
-                    className="w-full px-3 py-2 border border-ui rounded-lg text-sm"
-                  />
-                </div>
+              <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <FaMapMarkerAlt className="text-emerald-600" /> Location
+              </h3>
+              <div className="space-y-3">
+                <select
+                  value={selectedDistrict}
+                  onChange={(e) => { setSelectedDistrict(e.target.value); setSelectedSubcounty(''); }}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 transition-all outline-none"
+                >
+                  <option value="">All Districts</option>
+                  {districts.map(d => <option key={d._id || d.name} value={d.name}>{d.name}</option>)}
+                </select>
+                <select
+                  value={selectedSubcounty}
+                  onChange={(e) => setSelectedSubcounty(e.target.value)}
+                  disabled={!selectedDistrict}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 transition-all outline-none disabled:opacity-40"
+                >
+                  <option value="">All Subcounties</option>
+                  {subcounties.map(s => <option key={s._id || s.name || s} value={typeof s === 'string' ? s : s.name}>{typeof s === 'string' ? s : s.name}</option>)}
+                </select>
               </div>
             </div>
 
-            {/* Sort (Mobile Drawer Only) */}
-            <div className="lg:hidden">
-              <label className="text-sm font-semibold mb-2 block">Sort By</label>
+            <div>
+              <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <FaSortAmountDown className="text-emerald-600" /> Sort By
+              </h3>
               <select
                 value={filters.sort}
                 onChange={(e) => dispatch(setFilter({ key: 'sort', value: e.target.value }))}
-                className="w-full px-3 py-2 border border-ui rounded-lg text-sm focus-ring cursor-pointer"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 transition-all outline-none"
               >
-                <option value="-createdAt">Latest</option>
-                <option value="-regularPrice">Price: High→Low</option>
-                <option value="regularPrice">Price: Low→High</option>
+                <option value="-createdAt">Newest Harvest</option>
+                <option value="-regularPrice">Price: High to Low</option>
+                <option value="regularPrice">Price: Low to High</option>
               </select>
             </div>
-
-            {activeFilterCount > 0 && (
-              <button
-                onClick={() => {
-                  dispatch(clearFilters());
-                  setPriceRange({ min: 0, max: 100000000 });
-                  setSelectedDistrict('');
-                  setSelectedSubcounty('');
-                  setSelectedParish('');
-                  setIsFiltersOpen(false);
-                }}
-                className="w-full py-2 border border-ui text-ui-primary rounded-lg font-semibold active:scale-95 text-sm"
-              >
-                Clear All
-              </button>
-            )}
           </div>
         </aside>
 
-        {/* LISTINGS GRID */}
-        <section className="flex-1 min-w-0">
-          {loading && (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-10 w-10 border-2 border-color-primary border-t-transparent"></div>
+        {/* Listings Grid */}
+        <section className="flex-1">
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="aspect-[4/5] bg-white rounded-3xl animate-pulse border border-gray-100 shadow-sm"></div>
+              ))}
             </div>
-          )}
-
-          {!loading && listings.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <p className="text-base sm:text-lg font-semibold text-ui-primary mb-2">No listings found</p>
-              <p className="text-xs sm:text-sm text-ui-muted">Try adjusting your filters</p>
+          ) : products.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2.5rem] border border-gray-100 shadow-premium px-8 text-center">
+              <div className="text-6xl mb-6">🌾</div>
+              <h3 className="text-xl font-black text-gray-800">No produce found</h3>
+              <p className="text-gray-400 mt-2 font-medium max-w-xs">Try adjusting your location or category filters to find available harvests.</p>
+              <button
+                onClick={() => { dispatch(clearFilters()); setSelectedDistrict(''); }}
+                className="btn-primary mt-8"
+              >
+                Clear Filters
+              </button>
             </div>
-          )}
-
-          {!loading && listings.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-              {listings.map(listing => (
-                <article key={listing._id}>
-                  <ListingItem listing={listing} />
-                </article>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+              {products.map(product => (
+                <ProductItem key={product._id} product={product} />
               ))}
             </div>
           )}
         </section>
       </div>
+
+      {/* Mobile-Only Filter FAB */}
+      <div className="lg:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-40">
+        <button
+          onClick={() => setIsFiltersOpen(true)}
+          className="bg-emerald-800 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-3 font-black text-xs uppercase tracking-widest active:scale-95 transition-transform ring-4 ring-white"
+        >
+          <FaAdjust className="text-amber-400" /> Filter & Sort
+          {activeFilterCount > 0 && <span className="bg-amber-400 text-emerald-900 w-5 h-5 rounded-full flex items-center justify-center text-[10px]">{activeFilterCount}</span>}
+        </button>
+      </div>
+
+      {/* Mobile Filter Drawer */}
+      {isFiltersOpen && (
+        <>
+          <div className="fixed inset-0 bg-emerald-950/40 backdrop-blur-sm z-50 lg:hidden" onClick={() => setIsFiltersOpen(false)}></div>
+          <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-8 z-[60] animate-in lg:hidden shadow-2xl border-t border-gray-100">
+            <div className="w-16 h-1.5 bg-gray-100 rounded-full mx-auto mb-8"></div>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-lg font-black text-gray-900 flex items-center gap-3">
+                <FaFilter className="text-emerald-600" /> Filters
+              </h2>
+              <button onClick={() => setIsFiltersOpen(false)} className="p-3 bg-gray-50 rounded-2xl text-gray-400"><FaTimes /></button>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block">Location</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <select
+                    value={selectedDistrict}
+                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    className="w-full px-4 py-4 bg-gray-50 rounded-2xl text-xs font-black appearance-none border border-gray-100"
+                  >
+                    <option value="">Districts</option>
+                    {districts.map(d => <option key={d._id || d.name} value={d.name}>{d.name}</option>)}
+                  </select>
+                  <select
+                    value={selectedSubcounty}
+                    onChange={(e) => setSelectedSubcounty(e.target.value)}
+                    disabled={!selectedDistrict}
+                    className="w-full px-4 py-4 bg-gray-50 rounded-2xl text-xs font-black appearance-none border border-gray-100"
+                  >
+                    <option value="">Subcounty</option>
+                    {subcounties.map(s => <option key={s._id || s.name || s} value={typeof s === 'string' ? s : s.name}>{typeof s === 'string' ? s : s.name}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block">Price Range (UGX)</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={priceRange.min || ''}
+                    onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
+                    className="w-full px-4 py-4 bg-gray-50 rounded-2xl text-xs font-black border border-gray-100"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={priceRange.max === 100000000 ? '' : priceRange.max}
+                    onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value ? Number(e.target.value) : 100000000 })}
+                    className="w-full px-4 py-4 bg-gray-50 rounded-2xl text-xs font-black border border-gray-100"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsFiltersOpen(false)}
+                className="btn-primary w-full py-5 text-sm uppercase tracking-widest"
+              >
+                Show Results
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

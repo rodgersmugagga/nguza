@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { FaSearch, FaSeedling, FaPaw, FaLeaf, FaTractor, FaHandshake, FaChevronRight, FaChevronLeft, FaFire, FaBolt, FaClock, FaShieldAlt, FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
-import { MdVerified, MdLocalShipping } from 'react-icons/md';
+import { FaSeedling, FaPaw, FaLeaf, FaTractor, FaHandshake, FaChevronRight, FaChevronLeft, FaBolt, FaClock, FaShieldAlt, FaFire } from 'react-icons/fa';
+import { MdVerified } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFeatured, fetchListings } from '../redux/listings/listingsSlice.js';
-import ListingItem from '../components/ListingItem.jsx';
+import { fetchFeaturedProducts, fetchProducts } from '../redux/products/productsSlice.js';
+import ProductItem from '../components/ProductItem.jsx';
 import SkeletonCard from '../components/SkeletonCard.jsx';
 
 /* ─── Categories ─── */
@@ -44,20 +44,19 @@ function ScrollRow({ children, className = '' }) {
   };
   return (
     <div className={`relative group/scroll ${className}`}>
-      <button onClick={() => scroll(-1)} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-lg rounded-full p-2 text-gray-600 hover:text-emerald-700 opacity-0 group-hover/scroll:opacity-100 transition-opacity -translate-x-1/2">
+      <button onClick={() => scroll(-1)} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-lg rounded-full p-2 text-gray-600 hover:text-emerald-700 opacity-0 group-hover/scroll:opacity-100 transition-opacity -translate-x-1/2 hidden sm:block">
         <FaChevronLeft />
       </button>
       <div ref={ref} className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 px-1">
         {children}
       </div>
-      <button onClick={() => scroll(1)} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-lg rounded-full p-2 text-gray-600 hover:text-emerald-700 opacity-0 group-hover/scroll:opacity-100 transition-opacity translate-x-1/2">
+      <button onClick={() => scroll(1)} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-lg rounded-full p-2 text-gray-600 hover:text-emerald-700 opacity-0 group-hover/scroll:opacity-100 transition-opacity translate-x-1/2 hidden sm:block">
         <FaChevronRight />
       </button>
     </div>
   );
 }
 
-/* ─── Hero Carousel Slide ─── */
 const HERO_SLIDES = [
   { title: 'Harvest Season Deals', subtitle: 'Up to 40% off fresh crops, grains & produce', bg: 'from-emerald-800 to-emerald-600', emoji: '🌾', cta: 'Shop Crops', link: '/category/Crops' },
   { title: 'Premium Livestock', subtitle: 'Cattle, goats, poultry from verified sellers', bg: 'from-amber-700 to-amber-500', emoji: '🐄', cta: 'Browse Livestock', link: '/category/Livestock' },
@@ -73,25 +72,21 @@ export default function Home() {
 
   const SITE_URL = import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://nguza.onrender.com');
 
-  const { featured } = useSelector(s => s.listings || { featured: [] });
-  const { items, status } = useSelector(s => s.listings || { items: [], status: 'idle' });
+  const { featured, items, status } = useSelector(s => s.products || { featured: [], items: [], status: 'idle' });
 
   useEffect(() => {
-    dispatch(fetchFeatured());
-    dispatch(fetchListings({ page: 1, limit: 24 }));
+    dispatch(fetchFeaturedProducts());
+    dispatch(fetchProducts({ page: 1, limit: 24 }));
   }, [dispatch]);
 
-  // Auto-slide hero every 5s
   useEffect(() => {
     const id = setInterval(() => setActiveSlide(p => (p + 1) % HERO_SLIDES.length), 5000);
     return () => clearInterval(id);
   }, []);
 
-  // Flash sale end (24h from now, recalc on mount)
   const [flashEnd] = useState(() => Date.now() + 24 * 60 * 60 * 1000);
   const countdown = useCountdown(flashEnd);
 
-  // Filter items by active category
   const filteredItems = useMemo(() => {
     if (!activeCat || !Array.isArray(items)) return items;
     return items.filter(item => item.category === activeCat);
@@ -102,183 +97,173 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 overflow-x-hidden">
+    <main className="min-h-screen bg-gray-50 overflow-x-hidden pb-12 sm:pb-0">
       <Helmet>
-        <title>Nguza | Uganda's Agriculture Marketplace - Buy & Sell Crops, Livestock, Equipment</title>
-        <meta name="description" content="Uganda's trusted agriculture marketplace. Buy and sell crops, livestock, agricultural inputs, equipment, and services." />
-        <meta name="keywords" content="Uganda agriculture marketplace, buy crops Uganda, sell livestock Uganda, agricultural inputs, farm equipment, maize, beans, cattle, goats, poultry, seeds, fertilizers, tractors" />
+        <title>Nguza | Uganda's Agriculture Marketplace</title>
+        <meta name="description" content="Uganda's trusted agriculture marketplace. Buy and sell crops, livestock, equipment, and services." />
         <link rel="canonical" href={SITE_URL + '/'} />
-        <meta property="og:title" content="Nguza | Uganda's Agriculture Marketplace" />
-        <meta property="og:description" content="Buy and sell crops, livestock, agricultural inputs, equipment, and services across Uganda." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={SITE_URL + '/'} />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org", "@type": "WebSite",
-            "name": "Nguza - Uganda Agriculture Marketplace", "url": SITE_URL,
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": { "@type": "EntryPoint", "urlTemplate": `${SITE_URL}/search?searchTerm={search_term_string}` },
-              "query-input": "required name=search_term_string"
-            }
-          })}
-        </script>
       </Helmet>
 
-      {/* ══════════════════════════════════════════════════════ */}
-      {/* ─── HERO SECTION: Left Menu + Main Banner + Right Promo ─── */}
-      {/* ══════════════════════════════════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-4 pt-4 pb-2">
-        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_220px] gap-3">
+      {/* Mobile-Only Category Icons */}
+      <section className="sm:hidden bg-white border-b border-gray-100 py-3 mb-2 px-4 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-6 min-w-max">
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.key}
+                onClick={() => handleCategoryClick(cat.key)}
+                className="flex flex-col items-center gap-1.5"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-sm border border-emerald-100">
+                  <Icon />
+                </div>
+                <span className="text-[10px] font-bold text-gray-600 uppercase tracking-tighter whitespace-nowrap">{cat.title}</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
-          {/* ─── Left Category Menu (Desktop) ─── */}
-          <div className="hidden lg:block bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden self-start">
-            <div className="bg-emerald-800 text-white px-4 py-3 font-bold text-sm flex items-center gap-2">
-              <FaSeedling className="text-amber-400" /> All Categories
+      {/* Hero Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:pt-4 sm:pb-2">
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_240px] gap-4">
+
+          {/* Left Category Menu (Desktop Only) */}
+          <div className="hidden lg:block bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden self-start">
+            <div className="bg-emerald-800 text-white px-5 py-4 font-black text-xs uppercase tracking-widest flex items-center gap-3">
+              <FaSeedling className="text-amber-400" /> Categories
             </div>
-            <nav>
+            <nav className="p-1">
               {CATEGORIES.map((cat) => {
                 const Icon = cat.icon;
                 return (
                   <button
                     key={cat.key}
                     onClick={() => handleCategoryClick(cat.key)}
-                    className="w-full px-4 py-2.5 flex items-center justify-between text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-left group border-b border-gray-50 last:border-0"
+                    className="w-full px-4 py-3 flex items-center justify-between text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all text-left group rounded-xl"
                   >
-                    <div className="flex items-center gap-2.5">
-                      <Icon className="text-gray-400 group-hover:text-emerald-600 text-sm" />
-                      <span className="text-sm">{cat.title}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                        <Icon className="text-gray-400 group-hover:text-emerald-600 text-sm" />
+                      </div>
+                      <span className="text-[13px] font-bold">{cat.title}</span>
                     </div>
-                    <FaChevronRight className="text-[10px] text-gray-300 group-hover:text-emerald-600" />
+                    <FaChevronRight className="text-[10px] text-gray-300 group-hover:text-emerald-600 translate-x-0 group-hover:translate-x-1 transition-transform" />
                   </button>
                 );
               })}
             </nav>
           </div>
 
-          {/* ─── Main Banner Carousel (Auto-slide) ─── */}
-          <div className="relative rounded-2xl overflow-hidden shadow-md min-h-[200px] sm:min-h-[280px] lg:min-h-[320px]">
+          {/* Banner Carousel */}
+          <div className="relative rounded-3xl overflow-hidden shadow-premium h-[260px] sm:h-[340px] lg:h-[400px] border border-gray-100">
             {HERO_SLIDES.map((slide, idx) => (
               <div
                 key={idx}
-                className={`absolute inset-0 bg-gradient-to-br ${slide.bg} flex items-center transition-all duration-1000 ease-in-out ${idx === activeSlide ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
+                className={`absolute inset-0 bg-gradient-to-br ${slide.bg} flex items-center transition-all duration-1000 ease-in-out ${idx === activeSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'}`}
               >
-                <div className="px-6 sm:px-10 py-8 text-white max-w-lg z-10">
-                  <p className="text-xs font-semibold tracking-widest uppercase text-white/70 mb-2">Nguza Marketplace</p>
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black leading-tight mb-3">{slide.title}</h2>
-                  <p className="text-sm sm:text-base text-white/90 mb-5">{slide.subtitle}</p>
-                  <Link to={slide.link} className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-emerald-900 font-bold px-6 py-2.5 rounded-lg transition-colors shadow-md text-sm">
-                    {slide.cta} <FaChevronRight className="text-xs" />
+                <div className="px-6 sm:px-12 py-8 text-white max-w-xl z-10">
+                  <span className="inline-block bg-white/20 backdrop-blur-sm text-[10px] font-black tracking-[0.2em] uppercase px-3 py-1 rounded-full mb-4">Marketplace</span>
+                  <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-[1.1] mb-4 text-balance">{slide.title}</h2>
+                  <p className="text-sm sm:text-lg text-white/80 font-medium mb-8 max-w-md">{slide.subtitle}</p>
+                  <Link to={slide.link} className="btn-accent inline-flex px-8 py-3.5 rounded-full text-base">
+                    {slide.cta} <FaChevronRight className="ml-2 text-xs" />
                   </Link>
                 </div>
-                <div className="absolute right-6 bottom-6 text-8xl sm:text-9xl opacity-30 select-none">{slide.emoji}</div>
+                <div className="absolute right-[-5%] bottom-[-10%] text-[15rem] sm:text-[20rem] opacity-10 select-none animate-pulse duration-[10s]">{slide.emoji}</div>
               </div>
             ))}
-            {/* Slide Indicators */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+
+            {/* Dots */}
+            <div className="absolute bottom-6 left-6 flex gap-2 z-20">
               {HERO_SLIDES.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveSlide(idx)}
-                  className={`rounded-full transition-all duration-300 ${idx === activeSlide ? 'w-8 h-2.5 bg-amber-400' : 'w-2.5 h-2.5 bg-white/50 hover:bg-white/70'}`}
+                  className={`rounded-full transition-all duration-500 ${idx === activeSlide ? 'w-10 h-2 bg-amber-400' : 'w-2 h-2 bg-white/40 hover:bg-white/60'}`}
                 />
               ))}
             </div>
-            {/* Slide Arrows */}
-            <button onClick={() => setActiveSlide(p => (p - 1 + HERO_SLIDES.length) % HERO_SLIDES.length)} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition-colors">
-              <FaChevronLeft />
-            </button>
-            <button onClick={() => setActiveSlide(p => (p + 1) % HERO_SLIDES.length)} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition-colors">
-              <FaChevronRight />
-            </button>
           </div>
 
-          {/* ─── Right Promo Panel (Desktop) ─── */}
-          <div className="hidden lg:flex flex-col gap-3">
-            <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-5 text-white flex-1 flex flex-col justify-between shadow-sm relative overflow-hidden group">
-              <div className="absolute top-0 right-0 bg-red-600 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-tighter rounded-bl-xl shadow-lg animate-bounce mt-2 mr-2">
-                Deal of the Day
+          {/* Right Promo Panel (Desktop Only) */}
+          <div className="hidden lg:flex flex-col gap-4">
+            <div className="bg-amber-500 rounded-3xl p-6 text-white flex-1 flex flex-col justify-between shadow-premium relative overflow-hidden group border border-amber-400">
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000"></div>
+              <div className="z-10">
+                <div className="bg-red-600 inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter shadow-lg animate-bounce">Hot Sale</div>
+                <h3 className="text-xl font-black mt-3 leading-tight">Farmer's Favorites</h3>
+                <p className="text-xs text-amber-100 mt-2 font-medium opacity-80">Verified seeds & inputs now on flash sale.</p>
               </div>
-              <div className="relative z-10">
-                <p className="text-xs font-bold tracking-wider uppercase text-amber-200">Deal of the Day</p>
-                <h3 className="text-lg font-black mt-1 leading-tight">Harvest Season Special</h3>
-                <p className="text-xs text-amber-100 mt-1">Up to 40% off fresh produce</p>
-              </div>
-              <Link to="/search" className="bg-white text-amber-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-amber-50 transition-colors text-center mt-3">
-                Shop Now
+              <Link to="/search" className="bg-white/90 backdrop-blur-sm text-amber-700 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white transition-all text-center mt-4 shadow-lg border border-white">
+                Shop Deal
               </Link>
             </div>
-            <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl p-5 text-white flex-1 flex flex-col justify-between shadow-sm">
+            <div className="bg-emerald-900 rounded-3xl p-6 text-white flex-1 flex flex-col justify-between shadow-premium relative border border-emerald-800">
               <div>
-                <div className="flex items-center gap-1 mb-1">
-                  <MdVerified className="text-blue-300 text-sm" />
-                  <span className="text-[10px] font-bold text-emerald-200 uppercase tracking-wider">Verified Sellers</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <MdVerified className="text-amber-400 text-lg" />
+                  <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Nguza Certified</span>
                 </div>
-                <h3 className="text-lg font-black leading-tight">Sell on Nguza</h3>
-                <p className="text-xs text-emerald-200 mt-1">Reach thousands of buyers</p>
+                <h3 className="text-xl font-black leading-tight">Become a Seller</h3>
+                <p className="text-xs text-emerald-300 mt-2 font-medium opacity-80">Join 10,000+ farmers across Uganda.</p>
               </div>
-              <Link to="/create-listing" className="bg-amber-400 text-emerald-900 px-4 py-2 rounded-lg text-xs font-bold hover:bg-amber-500 transition-colors text-center mt-3">
+              <Link to="/register-vendor" className="btn-accent px-6 py-2.5 rounded-xl text-xs uppercase tracking-widest">
                 Start Selling
               </Link>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════ */}
-      {/* ─── FLASH SALES with Countdown ─── (Jumia style) */}
-      {/* ══════════════════════════════════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-4 py-3">
-        <div className="bg-gradient-to-r from-red-600 to-red-500 rounded-2xl p-4 shadow-md">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-white">
-                <FaBolt className="text-yellow-300 text-xl animate-pulse" />
-                <h2 className="text-lg sm:text-xl font-black text-white">Flash Sales</h2>
+      {/* Flash Sales Section */}
+      <section className="container-responsive py-4">
+        <div className="bg-white rounded-[2.5rem] p-5 sm:p-8 shadow-premium border border-gray-100">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-2xl shadow-sm border border-red-100">
+                <FaBolt className="animate-pulse" />
               </div>
-              {/* Countdown */}
-              <div className="flex items-center gap-1 ml-3">
-                <FaClock className="text-yellow-300 text-sm" />
-                <span className="text-xs text-yellow-200 mr-1">Time Left:</span>
-                {[
-                  { val: countdown.hours, label: 'h' },
-                  { val: countdown.minutes, label: 'm' },
-                  { val: countdown.seconds, label: 's' },
-                ].map((t, i) => (
-                  <span key={i} className="bg-gray-900 text-white px-2 py-1 rounded font-mono text-sm font-bold">
-                    {String(t.val).padStart(2, '0')}{t.label}
-                  </span>
-                ))}
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Flash Sales</h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <FaClock className="text-amber-500 text-xs" />
+                  <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Ends In:</p>
+                  <div className="flex gap-1.5 ml-1">
+                    {[countdown.hours, countdown.minutes, countdown.seconds].map((v, i) => (
+                      <div key={i} className="bg-gray-900 text-white w-7 h-7 flex items-center justify-center rounded-lg font-mono text-xs font-black border border-gray-800">
+                        {String(v).padStart(2, '0')}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-            <Link to="/search" className="text-white text-sm font-semibold hover:text-yellow-200 transition-colors flex items-center gap-1">
-              See All <FaChevronRight className="text-xs" />
+            <Link to="/search" className="text-emerald-700 font-black text-xs uppercase tracking-widest hover:text-emerald-800 transition-colors flex items-center gap-2 group ml-1">
+              See All Deals <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
-          {/* Flash Sale Items - Horizontal Scroll */}
           <ScrollRow>
             {status === 'loading' ? (
               Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="snap-start flex-shrink-0 w-44 sm:w-52"><SkeletonCard /></div>
+                <div key={i} className="snap-start flex-shrink-0 w-44 sm:w-60"><SkeletonCard /></div>
               ))
             ) : (
               Array.isArray(items) && items.slice(0, 10).map((item, idx) => (
-                <div key={item._id || item.id} className="snap-start flex-shrink-0 w-44 sm:w-52">
-                  <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow h-full flex flex-col">
-                    <ListingItem listing={item} />
-                    {/* Stock Progress Bar - Jumia style urgency */}
-                    <div className="px-3 pb-3">
-                      <div className="flex justify-between items-center text-[10px] mb-1">
-                        <span className="text-gray-500 font-medium">Stock: {Math.max(2, 35 - idx * 4)} left</span>
-                        <span className="text-red-600 font-bold italic">Almost Sold Out!</span>
+                <div key={item._id} className="snap-start flex-shrink-0 w-44 sm:w-60">
+                  <div className="bg-gray-50/50 rounded-3xl p-1 pb-3 hover:bg-white transition-colors duration-500">
+                    <ProductItem product={item} />
+                    <div className="px-4 mt-3">
+                      <div className="flex justify-between items-center text-[10px] mb-2 font-black uppercase tracking-tighter">
+                        <span className="text-gray-400">Sold: {Math.max(10, 80 - idx * 5)}%</span>
+                        <span className="text-red-500 font-black tracking-widest">Ending Soon</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
                         <div
                           className="bg-gradient-to-r from-red-600 to-amber-400 h-1.5 rounded-full transition-all duration-1000"
-                          style={{ width: `${Math.max(10, 85 - idx * 7)}%` }}
+                          style={{ width: `${Math.max(20, 90 - idx * 6)}%` }}
                         />
                       </div>
                     </div>
@@ -290,95 +275,69 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════ */}
-      {/* ─── CATEGORY FILTER + PRODUCTS GRID ─── */}
-      {/* ══════════════════════════════════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-4 py-3">
-        {/* Mobile Category Scroller */}
-        <div className="overflow-x-auto scrollbar-hide mb-4 lg:hidden">
-          <div className="flex gap-2 min-w-min pb-1">
-            <button
-              onClick={() => setActiveCat(null)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${!activeCat ? 'bg-emerald-700 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:border-emerald-300'}`}
-            >
-              All Products
-            </button>
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.key}
-                onClick={() => setActiveCat(activeCat === cat.key ? null : cat.key)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${activeCat === cat.key ? 'bg-emerald-700 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:border-emerald-300'}`}
-              >
-                <span>{cat.emoji}</span> {cat.title}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Active Category Tag */}
-        {activeCat && (
-          <div className="flex items-center gap-2 mb-3">
-            <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1.5">
-              Showing: {activeCat}
-              <button onClick={() => setActiveCat(null)} className="ml-1 text-emerald-600 hover:text-red-500 transition-colors">
-                <FaTimes className="text-xs" />
-              </button>
-            </span>
-          </div>
-        )}
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg sm:text-xl font-black text-gray-900 flex items-center gap-2">
-              <FaFire className="text-amber-500" /> {activeCat || 'All Products'}
+      {/* Main Grid */}
+      <section className="container-responsive py-4">
+        <div className="bg-white rounded-[2.5rem] p-5 sm:p-8 shadow-premium border border-gray-100">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-2xl shadow-sm border border-amber-100">
+                <FaFire />
+              </div>
+              {activeCat || 'Trending Products'}
             </h2>
-            <Link to="/search" className="text-sm text-emerald-700 hover:text-emerald-800 font-semibold flex items-center gap-1">
-              View All <FaChevronRight className="text-xs" />
+            <Link to="/search" className="hidden sm:flex text-emerald-700 font-black text-xs uppercase tracking-widest hover:text-emerald-800 transition-colors items-center gap-2 group">
+              Browse More <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-6">
             {status === 'loading' ? (
               Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)
             ) : (
               Array.isArray(filteredItems) && filteredItems.length > 0 ? (
                 filteredItems.map(item => (
-                  <ListingItem key={item._id || item.id} listing={item} />
+                  <ProductItem key={item._id} product={item} />
                 ))
               ) : (
-                <div className="col-span-full text-center py-16">
-                  <p className="text-5xl mb-3">🌿</p>
-                  <h3 className="text-lg font-bold text-gray-700">No products found</h3>
-                  <p className="text-sm text-gray-500 mt-1">Try selecting a different category</p>
-                  <button onClick={() => setActiveCat(null)} className="mt-4 px-6 py-2 bg-emerald-700 text-white rounded-lg text-sm font-semibold hover:bg-emerald-800 transition-colors">
+                <div className="col-span-full text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+                  <span className="text-6xl mb-6 block">🌾</span>
+                  <h3 className="text-xl font-black text-gray-700 mb-2">No products found</h3>
+                  <p className="text-sm text-gray-400 mb-8 max-w-xs mx-auto">Try selecting a different category or clearing your filters.</p>
+                  <button onClick={() => setActiveCat(null)} className="btn-primary">
                     Show All Products
                   </button>
                 </div>
               )
             )}
           </div>
+
+          <div className="mt-12 text-center sm:hidden">
+            <Link to="/search" className="btn-secondary w-full py-4 text-xs tracking-widest uppercase">
+              Browse All Inventory
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════ */}
-      {/* ─── FEATURED / TOP SELLER PICKS ─── (Carousel) */}
-      {/* ══════════════════════════════════════════════════════ */}
+      {/* Featured Picks */}
       {Array.isArray(featured) && featured.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 py-3">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg sm:text-xl font-black text-gray-900 flex items-center gap-2">
-                <span className="text-amber-400">⭐</span> Top Seller Picks
+        <section className="container-responsive py-4">
+          <div className="bg-emerald-900 rounded-[2.5rem] p-5 sm:p-10 shadow-premium border border-emerald-800 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
+            <div className="flex items-center justify-between mb-8 relative z-10">
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-400 text-emerald-900 flex items-center justify-center text-2xl shadow-lg">
+                  ⭐
+                </div>
+                Recommended for You
               </h2>
-              <div className="flex items-center gap-1.5">
-                <MdVerified className="text-blue-500" />
-                <span className="text-xs text-blue-600 font-semibold">Verified Sellers</span>
-              </div>
             </div>
-            <ScrollRow>
+            <ScrollRow className="relative z-10">
               {featured.map(item => (
-                <div key={item._id || item.id} className="snap-start flex-shrink-0 w-52 sm:w-56">
-                  <ListingItem listing={item} />
+                <div key={item._id} className="snap-start flex-shrink-0 w-52 sm:w-64">
+                  <div className="bg-white/10 backdrop-blur-md rounded-3xl p-1.5 hover:bg-white/20 transition-all duration-300 border border-white/5">
+                    <ProductItem product={item} />
+                  </div>
                 </div>
               ))}
             </ScrollRow>
@@ -386,75 +345,52 @@ export default function Home() {
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════ */}
-      {/* ─── INSPIRED BY YOUR BROWSING ─── (Amazon-style) */}
-      {/* ══════════════════════════════════════════════════════ */}
-      {Array.isArray(items) && items.length > 6 && (
-        <section className="max-w-7xl mx-auto px-4 py-3">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-            <h2 className="text-lg sm:text-xl font-black text-gray-900 mb-4">Inspired by Your Browsing</h2>
-            <ScrollRow>
-              {items.slice(6).map(item => (
-                <div key={item._id || item.id} className="snap-start flex-shrink-0 w-48 sm:w-52">
-                  <ListingItem listing={item} />
+      {/* Footer (Simplified for Mobile) */}
+      <footer className="bg-white border-t border-gray-100 mt-12 pb-24 sm:pb-8">
+        <div className="container-responsive py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 sm:gap-8 text-sm">
+            <div className="text-center sm:text-left">
+              <Link to="/" className="flex items-center gap-2 justify-center sm:justify-start mb-6">
+                <img src="/logo.png" alt="Nguza" className="h-8 w-auto" />
+                <span className="font-black text-2xl text-emerald-800 tracking-tighter">Nguza</span>
+              </Link>
+              <p className="text-gray-400 font-medium max-w-xs mx-auto sm:mx-0 leading-relaxed mb-6">Connecting farmers across Uganda with premium agricultural products and services.</p>
+              <div className="flex items-center justify-center sm:justify-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 hover:text-emerald-600 transition-colors shadow-sm cursor-pointer"><FaShieldAlt /></div>
+              </div>
+            </div>
+            {/* ... rest of footer columns simplified ... */}
+            <div className="hidden sm:block">
+              <h4 className="font-black text-gray-900 mb-6 text-xs uppercase tracking-[0.2em]">Quick Links</h4>
+              <ul className="space-y-4 font-bold text-gray-400">
+                <li><Link to="/about" className="hover:text-emerald-700 transition-colors">About Our Vision</Link></li>
+                <li><Link to="/contact" className="hover:text-emerald-700 transition-colors">Get Support</Link></li>
+              </ul>
+            </div>
+            <div className="hidden sm:block">
+              <h4 className="font-black text-gray-900 mb-6 text-xs uppercase tracking-[0.2em]">Marketplace</h4>
+              <ul className="space-y-4 font-bold text-gray-400">
+                <li><Link to="/search" className="hover:text-emerald-700 transition-colors">Browse Crops</Link></li>
+                <li><Link to="/search" className="hover:text-emerald-700 transition-colors">Livestock Hub</Link></li>
+              </ul>
+            </div>
+            <div className="hidden sm:block">
+              <h4 className="font-black text-gray-900 mb-6 text-xs uppercase tracking-[0.2em]">Safety First</h4>
+              <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+                <div className="flex items-center gap-3 text-emerald-800 mb-2">
+                  <FaShieldAlt className="text-xl" />
+                  <span className="font-black text-xs uppercase tracking-wider">Buyer Protection</span>
                 </div>
-              ))}
-            </ScrollRow>
-          </div>
-        </section>
-      )}
-
-      {/* ══════════════════════════════════════════════════════ */}
-      {/* ─── FOOTER ─── Harvest Gold top border */}
-      {/* ══════════════════════════════════════════════════════ */}
-      <footer className="bg-emerald-900 mt-6 border-t-8 border-amber-400">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
-            <div>
-              <h4 className="font-bold text-amber-400 mb-3 text-xs uppercase tracking-wider">About Nguza</h4>
-              <ul className="space-y-2">
-                <li><Link to="/about" className="text-emerald-300 hover:text-white transition-colors">About Us</Link></li>
-                <li><Link to="/contact" className="text-emerald-300 hover:text-white transition-colors">Contact</Link></li>
-                <li><Link to="/privacy" className="text-emerald-300 hover:text-white transition-colors">Privacy Policy</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-amber-400 mb-3 text-xs uppercase tracking-wider">Categories</h4>
-              <ul className="space-y-2">
-                {CATEGORIES.slice(0, 4).map(cat => (
-                  <li key={cat.key}><Link to={`/category/${encodeURIComponent(cat.key)}`} className="text-emerald-300 hover:text-white transition-colors">{cat.title}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-amber-400 mb-3 text-xs uppercase tracking-wider">For Sellers</h4>
-              <ul className="space-y-2">
-                <li><Link to="/create-listing" className="text-emerald-300 hover:text-white transition-colors">Post a Listing</Link></li>
-                <li><Link to="/seller-dashboard" className="text-emerald-300 hover:text-white transition-colors">Seller Dashboard</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-amber-400 mb-3 text-xs uppercase tracking-wider">Farm Tracking</h4>
-              <div className="flex items-center gap-2 text-emerald-300 text-xs">
-                <FaMapMarkerAlt className="text-amber-400" />
-                <span>Farm Order Tracking</span>
-              </div>
-              <div className="flex items-center gap-2 text-emerald-300 text-xs mt-2">
-                <MdLocalShipping className="text-amber-400" />
-                <span>Nguza Express Delivery</span>
-              </div>
-              <div className="flex items-center gap-2 text-emerald-300 text-xs mt-2">
-                <FaShieldAlt className="text-amber-400" />
-                <span>Buyer Protection Guarantee</span>
+                <p className="text-[11px] text-emerald-600 font-medium leading-relaxed">Your transactions are secured. We prioritize trust in every harvest.</p>
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-emerald-800 flex flex-col md:flex-row justify-between items-center gap-3">
-            <div className="flex items-center gap-2">
-              <FaSeedling className="text-amber-400 text-xl" />
-              <span className="font-black text-white text-lg">Nguza</span>
+          <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-6">
+            <p className="text-xs font-bold text-gray-300">© {new Date().getFullYear()} NGUZA UGANDA. PREMIUM AGRI MARKETPLACE.</p>
+            <div className="flex gap-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              <span>Term of Use</span>
+              <span>Privacy Policy</span>
             </div>
-            <p className="text-xs text-emerald-400">© {new Date().getFullYear()} Rodvers Company Limited. All rights reserved.</p>
           </div>
         </div>
       </footer>

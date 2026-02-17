@@ -10,17 +10,16 @@ export default function SellerDashboard() {
 
   useEffect(() => {
     fetchMyProducts();
-  }, []);
+  }, [currentUser.token]);
 
   const fetchMyProducts = async () => {
     try {
-      const res = await fetch('/api/products/myproducts', {
+      const res = await fetch('/api/products/view/myproducts', {
         headers: { Authorization: `Bearer ${currentUser.token}` }
       });
       const data = await res.json();
       if (res.ok) {
-        // Ensure data is an array before setting
-        setProducts(Array.isArray(data) ? data : []);
+        setProducts(Array.isArray(data) ? data : data.products || []);
       } else {
         setProducts([]);
       }
@@ -53,83 +52,99 @@ export default function SellerDashboard() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
           <div>
-            <h1 className="text-3xl font-black text-gray-900">Seller Dashboard</h1>
-            <p className="text-gray-500 mt-2">Manage your inventory and track performance</p>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Seller Dashboard</h1>
+            <p className="text-gray-500 mt-2 font-medium">Manage your farm inventory and track performance</p>
           </div>
-          <Link to="/create-listing" className="bg-color-primary text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-color-primary/30 hover:brightness-110 transition-all">
-            <FaPlus /> Add New Product
+          <Link to="/add-product" className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black flex items-center gap-2 shadow-xl shadow-emerald-600/20 hover:scale-105 transition-all active:scale-95">
+            <FaPlus /> Post New Product
           </Link>
         </div>
 
-        {/* Stats Overview */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
-              <FaBox size={20} />
+          <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 ring-1 ring-gray-100">
+            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-inner">
+              <FaBox size={24} />
             </div>
-            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Total Products</p>
-            <h4 className="text-3xl font-black text-gray-900">{Array.isArray(products) ? products.length : 0}</h4>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Products Listed</p>
+            <h4 className="text-4xl font-black text-gray-900 tracking-tighter">{products.length}</h4>
           </div>
-          <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4">
-              <FaChartLine size={20} />
+          <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+            <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+              <FaChartLine size={24} />
             </div>
-            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Total Views</p>
-            <h4 className="text-3xl font-black text-gray-900">--</h4> {/* Placeholder for views if implemented */}
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Engagement</p>
+            <h4 className="text-4xl font-black text-gray-900 tracking-tighter">
+              {products.reduce((acc, p) => acc + (p.views || 0), 0)} <span className="text-sm font-bold text-gray-400">Views</span>
+            </h4>
           </div>
-          <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4">
-              <FaClipboardList size={20} />
+          <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+            <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-6">
+              <FaClipboardList size={24} />
             </div>
-            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Pending Orders</p>
-            <h4 className="text-3xl font-black text-gray-900">--</h4> {/* Placeholder for seller orders */}
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Inquiries</p>
+            <h4 className="text-4xl font-black text-gray-900 tracking-tighter">
+              {products.reduce((acc, p) => acc + (p.contactClicks || 0), 0)}
+            </h4>
           </div>
         </div>
 
-        {/* Products List */}
-        <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-8 border-b border-gray-50 bg-gray-50/30">
-            <h3 className="text-xl font-black text-gray-900">Your Inventory</h3>
+        {/* Inventory List */}
+        <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden ring-1 ring-gray-100">
+          <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+            <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3">
+              <div className="w-1.5 h-8 bg-emerald-600 rounded-full" />
+              Your Inventory
+            </h3>
           </div>
 
           {loading ? (
-            <div className="p-12 text-center text-gray-500">Loading products...</div>
-          ) : !Array.isArray(products) || products.length === 0 ? (
-            <div className="p-12 text-center">
-              <p className="text-gray-500 mb-4">You haven't listed any products yet.</p>
-              <Link to="/create-listing" className="text-color-primary font-bold hover:underline">Start selling today!</Link>
+            <div className="p-20 text-center"><div className="animate-spin h-10 w-10 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto" /></div>
+          ) : products.length === 0 ? (
+            <div className="p-20 text-center">
+              <div className="text-6xl mb-4">🪴</div>
+              <h4 className="text-xl font-black text-gray-800">Your store is empty</h4>
+              <p className="text-gray-500 mt-2 mb-8">Start your selling journey by adding your first product!</p>
+              <Link to="/add-product" className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black">Get Started</Link>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                <thead className="bg-gray-50/50 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
                   <tr>
-                    <th className="px-8 py-4">Product</th>
-                    <th className="px-8 py-4">Category</th>
-                    <th className="px-8 py-4">Price</th>
-                    <th className="px-8 py-4">Stock</th>
-                    <th className="px-8 py-4 text-right">Actions</th>
+                    <th className="px-8 py-6">Product Item</th>
+                    <th className="px-8 py-6">Category</th>
+                    <th className="px-8 py-6">Price</th>
+                    <th className="px-8 py-6">Status</th>
+                    <th className="px-8 py-6 text-right">Settings</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {Array.isArray(products) && products.map((product) => (
-                    <tr key={product._id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-8 py-5">
+                  {products.map((p) => (
+                    <tr key={p._id} className="hover:bg-gray-50/50 transition-colors group">
+                      <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <img src={product.imageUrls[0]} alt={product.name} className="w-12 h-12 rounded-xl object-cover bg-gray-100" />
-                          <Link to={`/products/${product._id}`} className="font-bold text-gray-900 hover:text-color-primary line-clamp-1">{product.name}</Link>
+                          <img src={p.imageUrls?.[0] || "/favicon.svg"} alt={p.name} className="w-14 h-14 rounded-2xl object-cover bg-gray-50 shadow-sm" />
+                          <div>
+                            <Link to={`/product/${p._id}`} className="font-black text-gray-900 hover:text-emerald-700 transition-colors line-clamp-1">{p.name}</Link>
+                            <p className="text-[10px] font-bold text-gray-400 mt-0.5 uppercase tracking-wider">{p.subCategory}</p>
+                          </div>
                         </div>
                       </td>
-                      <td className="px-8 py-5 text-sm text-gray-600">{product.category}</td>
-                      <td className="px-8 py-5 text-sm font-bold text-gray-900">UGX {product.regularPrice.toLocaleString()}</td>
-                      <td className="px-8 py-5 text-sm text-gray-600">{product.countInStock || 'N/A'}</td>
-                      <td className="px-8 py-5 text-right flex justify-end gap-2">
-                        <Link to={`/update-listing/${product._id}`} className="p-2 text-blue-400 hover:text-blue-600 transition-colors">
-                          <FaPen />
-                        </Link>
-                        <button onClick={() => handleDelete(product._id)} className="p-2 text-red-400 hover:text-red-600 transition-colors">
-                          <FaTrashAlt />
-                        </button>
+                      <td className="px-8 py-6 text-xs font-black text-gray-700">{p.category}</td>
+                      <td className="px-8 py-6">
+                        <span className="text-sm font-black text-emerald-600">UGX {p.regularPrice.toLocaleString()}</span>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className={`px-3 py-1 text-[10px] font-black rounded-full uppercase tracking-widest ${p.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {p.status || 'active'}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Link to={`/update-product/${p._id}`} className="p-3 bg-gray-50 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all shadow-sm"><FaPen size={12} /></Link>
+                          <button onClick={() => handleDelete(p._id)} className="p-3 bg-gray-50 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all shadow-sm"><FaTrashAlt size={12} /></button>
+                        </div>
                       </td>
                     </tr>
                   ))}
