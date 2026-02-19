@@ -7,7 +7,6 @@ import {
   FaChevronLeft, FaChartLine, FaCheckCircle, FaStar, FaStore
 } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore from 'swiper';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css/bundle';
 import Contact from '../components/Contact';
@@ -15,7 +14,6 @@ import SafeHelmet from '../components/SafeHelmet';
 import { fetchProductById, clearCurrentProduct } from '../redux/products/productsSlice.js';
 import { resolvePrices } from '../utils/priceUtils';
 
-SwiperCore.use([Navigation, Pagination, Autoplay]);
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://nguza.com';
 
@@ -96,6 +94,7 @@ export default function ProductDetails() {
       {/* Hero Gallery */}
       <div className="relative h-[45vh] sm:h-[60vh] lg:h-[70vh] w-full overflow-hidden bg-emerald-950 group">
         <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
           navigation={{ prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' }}
           pagination={{ clickable: true, dynamicBullets: true }}
           autoplay={{ delay: 5000 }}
@@ -205,7 +204,7 @@ export default function ProductDetails() {
 
               <div className="flex items-center gap-4 mb-8 relative z-10 p-2 rounded-2xl hover:bg-gray-50 transition-colors">
                 <div className="w-16 h-16 rounded-2xl bg-emerald-900 p-1 flex-shrink-0 shadow-lg">
-                  <img src={product.userAvatar || '/favicon.svg'} className="w-full h-full object-cover rounded-xl" alt="avatar" />
+                  <img src={product.userAvatar || '/favicon.png'} className="w-full h-full object-cover rounded-xl" alt="avatar" />
                 </div>
                 <div>
                   <h4 className="text-lg font-black text-gray-900 leading-tight">{product.sellerName || 'Verified Producer'}</h4>
