@@ -178,6 +178,52 @@ export const changeUserRole = async (req, res, next) => {
   }
 };
 
+// Vendor management
+export const getPendingVendors = async (req, res, next) => {
+  try {
+    const vendors = await User.find({ 'vendorProfile.verificationStatus': 'pending' }).select('-password').sort({ createdAt: -1 });
+    res.status(200).json({ success: true, vendors });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const acceptVendor = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.vendorProfile.verificationStatus = 'verified';
+    user.role = 'seller';
+    user.isSeller = true;
+    await user.save();
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const rejectVendor = async (req, res, next) => {
+  try {
+    const { reason } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.vendorProfile.verificationStatus = 'rejected';
+    // optional: store rejection reason on the vendorProfile
+    user.vendorProfile.rejectionReason = reason;
+    // demote back to regular user if needed
+    user.role = 'user';
+    user.isSeller = false;
+    await user.save();
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAllOrders = async (req, res, next) => {
   try {
     const Order = (await import('../models/order.model.js')).default;

@@ -8,6 +8,10 @@ import {
   toggleBanUser,
   changeUserRole,
   getUserActivity,
+  // Vendor management
+  getPendingVendors,
+  acceptVendor,
+  rejectVendor,
   // Product Moderation / Management
   approveProduct,
   rejectProduct,
@@ -39,6 +43,11 @@ router.put('/user/:id', updateUserDetails);
 router.put('/user/:id/ban', toggleBanUser);
 router.put('/user/:id/role', changeUserRole);
 router.delete('/user/:id', deleteUser);
+
+// Vendor Management
+router.get('/vendors/pending', getPendingVendors);
+router.put('/vendors/:id/accept', acceptVendor);
+router.put('/vendors/:id/reject', rejectVendor);
 
 // Product Management
 router.get('/products', getAllProductsAdmin);
