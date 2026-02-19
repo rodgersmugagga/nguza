@@ -189,6 +189,10 @@ const productSchema = new Schema({
     type: Number,
     default: 0
   },
+  contactClicks: {
+    type: Number,
+    default: 0
+  },
 
   // Moderation Status
   moderationStatus: {
@@ -209,6 +213,17 @@ const productSchema = new Schema({
 }, {
   timestamps: true
 });
+
+// Methods
+productSchema.methods.incrementViews = function () {
+  this.views += 1;
+  return this.save();
+};
+
+productSchema.methods.incrementContactClicks = function () {
+  this.contactClicks += 1;
+  return this.save();
+};
 
 // Indexes
 productSchema.index({ name: 'text', description: 'text', brand: 'text', 'details.cropType': 'text', 'details.variety': 'text' });

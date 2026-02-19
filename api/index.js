@@ -20,6 +20,17 @@ import imageOptimizationMiddleware from './middlewares/imageOptimization.js';
 dotenv.config();
 const app = express();
 
+// CORS – must be BEFORE helmet so preflight (OPTIONS) responses include proper headers
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000',
+    process.env.CLIENT_URL,
+  ].filter(Boolean),
+  credentials: true,
+}));
+
 // Helmet Security Policy – Firebase & Google Sign-In compatible
 app.use(
   helmet({
@@ -82,12 +93,15 @@ app.use(
   })
 );
 
+// Disable cross-origin resource policy blocking for dev (CORS handles it)
+app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
+
 // ⚡ Performance Middleware
 app.use(compressionMiddleware); // Gzip/Brotli compression
 app.use(imageOptimizationMiddleware); // Image optimization helpers
 app.use(cacheMiddleware(300)); // Cache GET requests for 5 minutes
 
-app.use(cors());
+
 app.use(express.json());
 
 // Routes

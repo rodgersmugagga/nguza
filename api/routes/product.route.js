@@ -10,7 +10,8 @@ import {
   getMyProducts,
   getSearchSuggestions,
   promoteProduct,
-  trackContactClick
+  trackContactClick,
+  uploadProductImages
 } from '../controllers/product.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import upload from '../middlewares/multer.js';
@@ -22,11 +23,14 @@ const router = express.Router();
 router.get('/', getProducts);
 router.get('/top', getTopProducts);
 router.get('/suggestions', getSearchSuggestions);
-router.get('/:id', validateObjectIdParam('id'), getProductById);
 
-// Protected actions
-router.post('/', authMiddleware, upload.array('images', 10), createProduct);
+// Protected actions (must be BEFORE /:id to avoid route conflicts)
 router.get('/view/myproducts', authMiddleware, getMyProducts);
+router.post('/', authMiddleware, upload.array('images', 10), createProduct);
+router.post('/upload', authMiddleware, upload.array('images', 10), uploadProductImages);
+
+// Parameterized routes (after all static paths)
+router.get('/:id', validateObjectIdParam('id'), getProductById);
 router.put('/:id', authMiddleware, validateObjectIdParam('id'), updateProduct);
 router.delete('/:id', authMiddleware, validateObjectIdParam('id'), deleteProduct);
 

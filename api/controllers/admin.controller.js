@@ -1,5 +1,7 @@
 import User from '../models/user.model.js';
 import Product from '../models/product.model.js';
+import CropType from '../models/cropType.model.js';
+import LivestockBreed from '../models/livestockBreed.model.js';
 import { invalidateCache } from '../middlewares/cache.js';
 
 export const getAdminStats = async (req, res, next) => {
@@ -253,3 +255,119 @@ export const cancelOrder = async (req, res, next) => {
     next(error);
   }
 };
+
+// Advanced Analytics
+export const getAdvancedAnalytics = async (req, res, next) => {
+  try {
+    const Order = (await import('../models/order.model.js')).default;
+
+    // 1. Revenue Trends (last 6 months)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const revenueTrends = await Order.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo }, status: { $ne: 'Cancelled' } } },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" }
+          },
+          revenue: { $sum: "$totalPrice" },
+          orders: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
+    ]);
+
+    // 2. Category Distribution
+    const categoryDistribution = await Product.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } }
+    ]);
+
+    // 3. User Growth
+    const userGrowth = await User.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      analytics: {
+        revenueTrends,
+        categoryDistribution,
+        userGrowth
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// CropType Management
+export const addCropType = async (req, res, next) => {
+  try {
+    const cropType = new CropType(req.body);
+    await cropType.save();
+    res.status(201).json({ success: true, cropType });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCropType = async (req, res, next) => {
+  try {
+    const cropType = await CropType.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json({ success: true, cropType });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCropType = async (req, res, next) => {
+  try {
+    await CropType.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: 'Crop type deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// LivestockBreed Management
+export const addLivestockBreed = async (req, res, next) => {
+  try {
+    const breed = new LivestockBreed(req.body);
+    await breed.save();
+    res.status(201).json({ success: true, breed });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateLivestockBreed = async (req, res, next) => {
+  try {
+    const breed = await LivestockBreed.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json({ success: true, breed });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteLivestockBreed = async (req, res, next) => {
+  try {
+    await LivestockBreed.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: 'Livestock breed deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+

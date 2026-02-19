@@ -22,7 +22,15 @@ import {
   // Enhanced Order Management
   updateOrderStatus,
   cancelOrder,
-  getAllOrders
+  getAllOrders,
+  // New Analytics & Inventory Management
+  getAdvancedAnalytics,
+  addCropType,
+  updateCropType,
+  deleteCropType,
+  addLivestockBreed,
+  updateLivestockBreed,
+  deleteLivestockBreed
 } from '../controllers/admin.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import adminMiddleware from '../middlewares/admin.middleware.js';
@@ -33,8 +41,9 @@ const router = express.Router();
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
-// Stats
+// Stats & Analytics
 router.get('/stats', getAdminStats);
+router.get('/analytics', getAdvancedAnalytics);
 
 // User Management
 router.get('/users', getAllUsers);
@@ -61,5 +70,14 @@ router.delete('/products/:id', deleteProductAdmin);
 router.get('/orders', getAllOrders);
 router.put('/order/:id/status', updateOrderStatus);
 router.put('/order/:id/cancel', cancelOrder);
+
+// Inventory Management (Crop Types & Breeds)
+router.post('/crop-types', addCropType);
+router.put('/crop-types/:id', updateCropType);
+router.delete('/crop-types/:id', deleteCropType);
+
+router.post('/breeds', addLivestockBreed);
+router.put('/breeds/:id', updateLivestockBreed);
+router.delete('/breeds/:id', deleteLivestockBreed);
 
 export default router;

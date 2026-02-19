@@ -2,53 +2,21 @@ import District from '../models/location.model.js';
 import CropType from '../models/cropType.model.js';
 import LivestockBreed from '../models/livestockBreed.model.js';
 
-// Uganda districts seed data (sample - add all 134 districts in production)
+// ==========================================
+// Uganda districts seed data – 55 districts
+// ==========================================
 const DISTRICTS_DATA = [
+  // ============ CENTRAL REGION ============
   {
     name: 'Kampala',
     region: 'Central',
     code: 'KLA',
     subcounties: [
-      {
-        name: 'Central Division',
-        parishes: [
-          { name: 'Nakasero', villages: ['Nakasero Hill', 'Kisozi', 'Kampala Road'] },
-          { name: 'Kololo', villages: ['Kololo North', 'Kololo Central', 'Kololo South'] },
-          { name: 'Kampala Central', villages: ['Market Area', 'City Centre'] }
-        ]
-      },
-      {
-        name: 'Kawempe Division',
-        parishes: [
-          { name: 'Kawempe', villages: ['Kawempe North', 'Kawempe South'] },
-          { name: 'Kazo', villages: ['Kazo A', 'Kazo B'] },
-          { name: 'Makerere', villages: ['Makerere 1', 'Makerere 2'] }
-        ]
-      },
-      {
-        name: 'Makindye Division',
-        parishes: [
-          { name: 'Makindye', villages: ['Makindye Central', 'Luzira Road'] },
-          { name: 'Kibuye', villages: ['Kibuye East', 'Kibuye West'] },
-          { name: 'Nsambya', villages: ['Nsambya Lower', 'Nsambya Upper'] }
-        ]
-      },
-      {
-        name: 'Nakawa Division',
-        parishes: [
-          { name: 'Nakawa', villages: ['Nakawa Industrial', 'Nakawa Estate'] },
-          { name: 'Ntinda', villages: ['Ntinda Central', 'Ntinda West'] },
-          { name: 'Naguru', villages: ['Naguru South', 'Naguru Hill'] }
-        ]
-      },
-      {
-        name: 'Rubaga Division',
-        parishes: [
-          { name: 'Rubaga', villages: ['Rubaga North', 'Rubaga Market'] },
-          { name: 'Namirembe', villages: ['Namirembe Hill'] },
-          { name: 'Lungujja', villages: ['Lungujja A', 'Lungujja B'] }
-        ]
-      }
+      { name: 'Central Division', parishes: ['Nakasero', 'Kololo', 'Kampala Central', 'Old Kampala', 'Kisenyi'] },
+      { name: 'Kawempe Division', parishes: ['Kawempe', 'Kazo', 'Makerere', 'Mulago', 'Wandegeya', 'Bwaise'] },
+      { name: 'Makindye Division', parishes: ['Makindye', 'Kibuye', 'Nsambya', 'Katwe', 'Lukuli', 'Ggaba'] },
+      { name: 'Nakawa Division', parishes: ['Nakawa', 'Ntinda', 'Naguru', 'Bukoto', 'Kiswa', 'Mbuya'] },
+      { name: 'Rubaga Division', parishes: ['Rubaga', 'Namirembe', 'Lungujja', 'Ndeeba', 'Mutundwe', 'Busega'] }
     ]
   },
   {
@@ -56,30 +24,13 @@ const DISTRICTS_DATA = [
     region: 'Central',
     code: 'WAK',
     subcounties: [
-      {
-        name: 'Kira',
-        parishes: [
-          { name: 'Kira', villages: ['Kira Town', 'Bweyogerere'] },
-          { name: 'Kimwaanyi', villages: ['Kimwaanyi A', 'Kimwaanyi B'] },
-          { name: 'Kasokoso', villages: ['Kasokoso 1'] }
-        ]
-      },
-      {
-        name: 'Entebbe',
-        parishes: [
-          { name: 'Entebbe', villages: ['Entebbe Town', 'Lubiri'] },
-          { name: 'Katabi', villages: ['Katabi Central'] },
-          { name: 'Nakiwogo', villages: ['Nakiwogo A'] }
-        ]
-      },
-      {
-        name: 'Nangabo',
-        parishes: [
-          { name: 'Nangabo', villages: ['Nangabo Centre'] },
-          { name: 'Busukuma', villages: ['Busukuma East'] }
-        ]
-      },
-      { name: 'Kakiri', parishes: ['Kakiri', 'Gombe'] }
+      { name: 'Kira', parishes: ['Kira', 'Kimwaanyi', 'Kasokoso', 'Bweyogerere', 'Kireka', 'Namugongo'] },
+      { name: 'Entebbe Municipality', parishes: ['Entebbe', 'Katabi', 'Nakiwogo', 'Kiwafu', 'Lunyo'] },
+      { name: 'Nangabo', parishes: ['Nangabo', 'Busukuma', 'Kiteezi', 'Gayaza', 'Gitta'] },
+      { name: 'Kakiri', parishes: ['Kakiri', 'Gombe', 'Masulita', 'Katende'] },
+      { name: 'Ssabagabo', parishes: ['Ssabagabo', 'Kajjansi', 'Kisugu', 'Bwebajja'] },
+      { name: 'Nsangi', parishes: ['Nsangi', 'Maya', 'Namulanda', 'Buloba'] },
+      { name: 'Wakiso Town Council', parishes: ['Wakiso', 'Maganjo', 'Kakungulu'] }
     ]
   },
   {
@@ -87,27 +38,11 @@ const DISTRICTS_DATA = [
     region: 'Central',
     code: 'MUK',
     subcounties: [
-      {
-        name: 'Mukono Town Council',
-        parishes: [
-          { name: 'Mukono', villages: ['Mukono Central', 'Mukono East'] },
-          { name: 'Namilyango', villages: ['Namilyango Hill'] }
-        ]
-      },
-      {
-        name: 'Goma',
-        parishes: [
-          { name: 'Goma', villages: ['Goma A'] },
-          { name: 'Seeta', villages: ['Seeta Central'] }
-        ]
-      },
-      {
-        name: 'Ntenjeru',
-        parishes: [
-          { name: 'Ntenjeru', villages: ['Ntenjeru A'] },
-          { name: 'Kimenyedde', villages: ['Kimenyedde Village'] }
-        ]
-      }
+      { name: 'Mukono Municipality', parishes: ['Mukono Central', 'Namilyango', 'Wantoni', 'Goma'] },
+      { name: 'Goma', parishes: ['Goma', 'Seeta', 'Namanve', 'Kyetume'] },
+      { name: 'Ntenjeru', parishes: ['Ntenjeru', 'Kimenyedde', 'Kyampisi'] },
+      { name: 'Nama', parishes: ['Nama', 'Nabbale', 'Kasawo'] },
+      { name: 'Nakisunga', parishes: ['Nakisunga', 'Ntunda', 'Mpatta'] }
     ]
   },
   {
@@ -115,9 +50,10 @@ const DISTRICTS_DATA = [
     region: 'Central',
     code: 'MSK',
     subcounties: [
-      { name: 'Masaka Municipality', parishes: ['Masaka', 'Katwe', 'Nyendo'] },
-      { name: 'Kyesiiga', parishes: ['Kyesiiga'] },
-      { name: 'Mukungwe', parishes: ['Mukungwe'] }
+      { name: 'Masaka Municipality', parishes: ['Masaka Central', 'Katwe', 'Nyendo', 'Kimaanya'] },
+      { name: 'Kyesiiga', parishes: ['Kyesiiga', 'Kyanamukaka'] },
+      { name: 'Mukungwe', parishes: ['Mukungwe', 'Buwunga'] },
+      { name: 'Kabonera', parishes: ['Kabonera', 'Kisekka'] }
     ]
   },
   {
@@ -125,53 +61,94 @@ const DISTRICTS_DATA = [
     region: 'Central',
     code: 'LWE',
     subcounties: [
-      { name: 'Kyazanga', parishes: ['Kyazanga', 'Lwengo', 'Kkingo'] },
-      { name: 'Ndagwe', parishes: ['Ndagwe', 'Kalamba'] },
-      { name: 'Malongo', parishes: ['Malongo'] }
+      { name: 'Kyazanga', parishes: ['Kyazanga', 'Lwengo', 'Kkingo', 'Ndagwe'] },
+      { name: 'Ndagwe', parishes: ['Ndagwe', 'Kalamba', 'Kisoga'] },
+      { name: 'Malongo', parishes: ['Malongo', 'Lwankoni'] }
     ]
   },
   {
-    name: 'Mbarara',
-    region: 'Western',
-    code: 'MBA',
+    name: 'Mpigi',
+    region: 'Central',
+    code: 'MPI',
     subcounties: [
-      {
-        name: 'Mbarara Municipality',
-        parishes: [
-          { name: 'Mbarara', villages: ['Mbarara Central', 'Mbarara West'] },
-          { name: 'Kamukuzi', villages: ['Kamukuzi East'] },
-          { name: 'Kakoba', villages: ['Kakoba North'] }
-        ]
-      },
-      { name: 'Rubaya', parishes: ['Rubaya'] },
-      { name: 'Nyamitanga', parishes: ['Nyamitanga'] }
+      { name: 'Mpigi Town Council', parishes: ['Mpigi', 'Bujuuko', 'Nkozi'] },
+      { name: 'Muduma', parishes: ['Muduma', 'Kammengo', 'Kituntu'] },
+      { name: 'Buwama', parishes: ['Buwama', 'Kamengo'] },
+      { name: 'Muduuma', parishes: ['Muduuma', 'Kiringente'] }
     ]
   },
+  {
+    name: 'Kayunga',
+    region: 'Central',
+    code: 'KAY',
+    subcounties: [
+      { name: 'Kayunga Town Council', parishes: ['Kayunga', 'Busana', 'Kangulumira'] },
+      { name: 'Nazigo', parishes: ['Nazigo', 'Galiraaya', 'Bbaale'] },
+      { name: 'Busana', parishes: ['Busana', 'Nawangoma'] }
+    ]
+  },
+  {
+    name: 'Luwero',
+    region: 'Central',
+    code: 'LUW',
+    subcounties: [
+      { name: 'Luwero Town Council', parishes: ['Luwero', 'Kasana', 'Katikamu'] },
+      { name: 'Wobulenzi', parishes: ['Wobulenzi', 'Bamunanika', 'Zirobwe'] },
+      { name: 'Bombo', parishes: ['Bombo', 'Nyimbwa'] },
+      { name: 'Kamira', parishes: ['Kamira', 'Makulubita'] }
+    ]
+  },
+  {
+    name: 'Mityana',
+    region: 'Central',
+    code: 'MIT',
+    subcounties: [
+      { name: 'Mityana Municipality', parishes: ['Mityana Central', 'Ttamu', 'Busimbi'] },
+      { name: 'Busujju', parishes: ['Busujju', 'Kalangaalo'] },
+      { name: 'Sekanyonyi', parishes: ['Sekanyonyi', 'Maanyi'] }
+    ]
+  },
+  {
+    name: 'Buikwe',
+    region: 'Central',
+    code: 'BUI',
+    subcounties: [
+      { name: 'Lugazi Municipality', parishes: ['Lugazi', 'Njeru', 'Buikwe'] },
+      { name: 'Nyenga', parishes: ['Nyenga', 'Nkokonjeru'] },
+      { name: 'Ssi-Bukunja', parishes: ['Ssi', 'Bukunja'] }
+    ]
+  },
+  {
+    name: 'Rakai',
+    region: 'Central',
+    code: 'RAK',
+    subcounties: [
+      { name: 'Rakai Town Council', parishes: ['Rakai', 'Kyotera', 'Kalisizo'] },
+      { name: 'Kooki', parishes: ['Kooki', 'Lwanda', 'Kabira'] },
+      { name: 'Kyotera', parishes: ['Kyotera', 'Kasasa'] }
+    ]
+  },
+  {
+    name: 'Sembabule',
+    region: 'Central',
+    code: 'SEM',
+    subcounties: [
+      { name: 'Sembabule Town Council', parishes: ['Sembabule', 'Lugusulu'] },
+      { name: 'Mateete', parishes: ['Mateete', 'Ntuusi'] },
+      { name: 'Mijwala', parishes: ['Mijwala', 'Lwemiyaga'] }
+    ]
+  },
+
+  // ============ EASTERN REGION ============
   {
     name: 'Jinja',
     region: 'Eastern',
     code: 'JIN',
     subcounties: [
-      {
-        name: 'Jinja Municipality',
-        parishes: [
-          { name: 'Jinja', villages: ['Jinja Town', 'Walukuba Road'] },
-          { name: 'Walukuba', villages: ['Walukuba North'] },
-          { name: 'Mpumudde', villages: ['Mpumudde Central'] }
-        ]
-      },
-      { name: 'Butembe', parishes: ['Butembe'] },
-      { name: 'Budondo', parishes: ['Budondo'] }
-    ]
-  },
-  {
-    name: 'Gulu',
-    region: 'Northern',
-    code: 'GUL',
-    subcounties: [
-      { name: 'Gulu Municipality', parishes: ['Gulu', 'Layibi', 'Bardege'] },
-      { name: 'Bungatira', parishes: ['Bungatira'] },
-      { name: 'Awach', parishes: ['Awach'] }
+      { name: 'Jinja Municipality', parishes: ['Jinja Central', 'Walukuba', 'Mpumudde', 'Masese'] },
+      { name: 'Butembe', parishes: ['Butembe', 'Kakira', 'Busede'] },
+      { name: 'Budondo', parishes: ['Budondo', 'Buwenge'] },
+      { name: 'Mafubira', parishes: ['Mafubira', 'Bugembe'] }
     ]
   },
   {
@@ -179,16 +156,295 @@ const DISTRICTS_DATA = [
     region: 'Eastern',
     code: 'MBL',
     subcounties: [
-      {
-        name: 'Mbale Municipality',
-        parishes: [
-          { name: 'Mbale', villages: ['Mbale Central', 'Mbale North'] },
-          { name: 'Industrial Area', villages: ['Industrial Zone'] },
-          { name: 'Namabasa', villages: ['Namabasa A'] }
-        ]
-      },
-      { name: 'Bungokho', parishes: ['Bungokho'] },
-      { name: 'Bubulo', parishes: ['Bubulo'] }
+      { name: 'Mbale Municipality', parishes: ['Mbale Central', 'Industrial Area', 'Namabasa', 'Wanale'] },
+      { name: 'Bungokho', parishes: ['Bungokho', 'Busiu', 'Namanyonyi'] },
+      { name: 'Nakaloke', parishes: ['Nakaloke', 'Bukhaweka'] }
+    ]
+  },
+  {
+    name: 'Iganga',
+    region: 'Eastern',
+    code: 'IGA',
+    subcounties: [
+      { name: 'Iganga Municipality', parishes: ['Iganga Central', 'Nakavule'] },
+      { name: 'Busembatya', parishes: ['Busembatya', 'Nawandala'] },
+      { name: 'Nakalama', parishes: ['Nakalama', 'Bulamogi'] },
+      { name: 'Namungalwe', parishes: ['Namungalwe', 'Ivukula'] }
+    ]
+  },
+  {
+    name: 'Tororo',
+    region: 'Eastern',
+    code: 'TOR',
+    subcounties: [
+      { name: 'Tororo Municipality', parishes: ['Tororo Central', 'Nagongera', 'Paya'] },
+      { name: 'Kisoko', parishes: ['Kisoko', 'Mulanda'] },
+      { name: 'Rubongi', parishes: ['Rubongi', 'Malaba'] },
+      { name: 'Nagongera', parishes: ['Nagongera', 'Molo'] }
+    ]
+  },
+  {
+    name: 'Busia',
+    region: 'Eastern',
+    code: 'BUS',
+    subcounties: [
+      { name: 'Busia Municipality', parishes: ['Busia Central', 'Majanji', 'Sofia'] },
+      { name: 'Masafu', parishes: ['Masafu', 'Buteba'] },
+      { name: 'Dabani', parishes: ['Dabani', 'Lumino'] }
+    ]
+  },
+  {
+    name: 'Kamuli',
+    region: 'Eastern',
+    code: 'KAM',
+    subcounties: [
+      { name: 'Kamuli Municipality', parishes: ['Kamuli Central', 'Bugulumbya'] },
+      { name: 'Nawanyago', parishes: ['Nawanyago', 'Namwendwa'] },
+      { name: 'Balawoli', parishes: ['Balawoli', 'Buyende'] },
+      { name: 'Wankole', parishes: ['Wankole', 'Kitayunjwa'] }
+    ]
+  },
+  {
+    name: 'Soroti',
+    region: 'Eastern',
+    code: 'SOR',
+    subcounties: [
+      { name: 'Soroti Municipality', parishes: ['Soroti Central', 'Opiyai', 'Aloet'] },
+      { name: 'Arapai', parishes: ['Arapai', 'Kamuda'] },
+      { name: 'Gweri', parishes: ['Gweri', 'Katine'] },
+      { name: 'Serere', parishes: ['Serere', 'Kadungulu'] }
+    ]
+  },
+  {
+    name: 'Kumi',
+    region: 'Eastern',
+    code: 'KUM',
+    subcounties: [
+      { name: 'Kumi Municipality', parishes: ['Kumi Central', 'Nyero'] },
+      { name: 'Ngora', parishes: ['Ngora', 'Mukura'] },
+      { name: 'Ongino', parishes: ['Ongino', 'Kolir'] }
+    ]
+  },
+  {
+    name: 'Pallisa',
+    region: 'Eastern',
+    code: 'PAL',
+    subcounties: [
+      { name: 'Pallisa Town Council', parishes: ['Pallisa', 'Butebo'] },
+      { name: 'Kibuku', parishes: ['Kibuku', 'Kadama'] },
+      { name: 'Gogonyo', parishes: ['Gogonyo', 'Kasodo'] }
+    ]
+  },
+  {
+    name: 'Bugiri',
+    region: 'Eastern',
+    code: 'BGI',
+    subcounties: [
+      { name: 'Bugiri Municipality', parishes: ['Bugiri Central', 'Nankoma'] },
+      { name: 'Buwunga', parishes: ['Buwunga', 'Kapyanga'] },
+      { name: 'Bulidha', parishes: ['Bulidha', 'Nabukalu'] }
+    ]
+  },
+  {
+    name: 'Sironko',
+    region: 'Eastern',
+    code: 'SIR',
+    subcounties: [
+      { name: 'Sironko Town Council', parishes: ['Sironko', 'Budadiri'] },
+      { name: 'Budadiri', parishes: ['Budadiri', 'Bumasifwa'] },
+      { name: 'Buwalasi', parishes: ['Buwalasi', 'Buteza'] }
+    ]
+  },
+  {
+    name: 'Kapchorwa',
+    region: 'Eastern',
+    code: 'KPC',
+    subcounties: [
+      { name: 'Kapchorwa Municipality', parishes: ['Kapchorwa Central', 'Tegeres'] },
+      { name: 'Sipi', parishes: ['Sipi', 'Kween'] },
+      { name: 'Bukwo', parishes: ['Bukwo', 'Suam'] }
+    ]
+  },
+
+  // ============ WESTERN REGION ============
+  {
+    name: 'Mbarara',
+    region: 'Western',
+    code: 'MBA',
+    subcounties: [
+      { name: 'Mbarara Municipality', parishes: ['Mbarara Central', 'Kamukuzi', 'Kakoba', 'Nyamitanga'] },
+      { name: 'Rubaya', parishes: ['Rubaya', 'Kashare', 'Rwanyamahembe'] },
+      { name: 'Bukiro', parishes: ['Bukiro', 'Rubindi'] },
+      { name: 'Biharwe', parishes: ['Biharwe', 'Ruharo'] }
+    ]
+  },
+  {
+    name: 'Kabale',
+    region: 'Western',
+    code: 'KBA',
+    subcounties: [
+      { name: 'Kabale Municipality', parishes: ['Kabale Central', 'Rushoroza', 'Kigongi'] },
+      { name: 'Ndorwa', parishes: ['Ndorwa', 'Hamurwa', 'Rubanda'] },
+      { name: 'Kaharo', parishes: ['Kaharo', 'Kitumba'] },
+      { name: 'Maziba', parishes: ['Maziba', 'Ikumba'] }
+    ]
+  },
+  {
+    name: 'Fort Portal',
+    region: 'Western',
+    code: 'FPT',
+    subcounties: [
+      { name: 'Fort Portal Municipality', parishes: ['Fort Portal Central', 'Kabarole', 'Rwengaju'] },
+      { name: 'Burahya', parishes: ['Burahya', 'Kijura', 'Bukuku'] },
+      { name: 'Busoro', parishes: ['Busoro', 'Buheesi'] },
+      { name: 'Kibiito', parishes: ['Kibiito', 'Rubona'] }
+    ]
+  },
+  {
+    name: 'Kasese',
+    region: 'Western',
+    code: 'KAS',
+    subcounties: [
+      { name: 'Kasese Municipality', parishes: ['Kasese Central', 'Nyamwamba', 'Rukoki'] },
+      { name: 'Bukonzo', parishes: ['Bukonzo', 'Maliba', 'Kilembe'] },
+      { name: 'Hima', parishes: ['Hima', 'Katwe'] },
+      { name: 'Muhokya', parishes: ['Muhokya', 'Karambi'] }
+    ]
+  },
+  {
+    name: 'Bushenyi',
+    region: 'Western',
+    code: 'BSH',
+    subcounties: [
+      { name: 'Bushenyi-Ishaka Municipality', parishes: ['Bushenyi Central', 'Ishaka', 'Nyakabirizi'] },
+      { name: 'Kakanju', parishes: ['Kakanju', 'Kyeizooba'] },
+      { name: 'Rubirizi', parishes: ['Rubirizi', 'Bunyaruguru'] }
+    ]
+  },
+  {
+    name: 'Ntungamo',
+    region: 'Western',
+    code: 'NTU',
+    subcounties: [
+      { name: 'Ntungamo Municipality', parishes: ['Ntungamo Central', 'Kyamate'] },
+      { name: 'Ruhaama', parishes: ['Ruhaama', 'Rukoni'] },
+      { name: 'Kajara', parishes: ['Kajara', 'Ruhija'] },
+      { name: 'Isingiro', parishes: ['Isingiro', 'Rugaaga'] }
+    ]
+  },
+  {
+    name: 'Hoima',
+    region: 'Western',
+    code: 'HOI',
+    subcounties: [
+      { name: 'Hoima Municipality', parishes: ['Hoima Central', 'Mparo', 'Bujumbura'] },
+      { name: 'Buseruka', parishes: ['Buseruka', 'Kigorobya'] },
+      { name: 'Kitoba', parishes: ['Kitoba', 'Bugahya'] },
+      { name: 'Kabwoya', parishes: ['Kabwoya', 'Kyangwali'] }
+    ]
+  },
+  {
+    name: 'Masindi',
+    region: 'Western',
+    code: 'MAS',
+    subcounties: [
+      { name: 'Masindi Municipality', parishes: ['Masindi Central', 'Kijungunta'] },
+      { name: 'Budongo', parishes: ['Budongo', 'Biiso'] },
+      { name: 'Pakanyi', parishes: ['Pakanyi', 'Bwijanga'] },
+      { name: 'Miirya', parishes: ['Miirya', 'Kimengo'] }
+    ]
+  },
+  {
+    name: 'Kibale',
+    region: 'Western',
+    code: 'KBL',
+    subcounties: [
+      { name: 'Kibale Town Council', parishes: ['Kibale', 'Kagadi'] },
+      { name: 'Kagadi', parishes: ['Kagadi', 'Muhorro'] },
+      { name: 'Ndaiga', parishes: ['Ndaiga', 'Mabaale'] }
+    ]
+  },
+  {
+    name: 'Rukungiri',
+    region: 'Western',
+    code: 'RUK',
+    subcounties: [
+      { name: 'Rukungiri Municipality', parishes: ['Rukungiri Central', 'Nyarushanje'] },
+      { name: 'Rubabo', parishes: ['Rubabo', 'Kebisoni'] },
+      { name: 'Buyanja', parishes: ['Buyanja', 'Nyakagyeme'] }
+    ]
+  },
+  {
+    name: 'Kanungu',
+    region: 'Western',
+    code: 'KAN',
+    subcounties: [
+      { name: 'Kanungu Town Council', parishes: ['Kanungu', 'Kambuga'] },
+      { name: 'Kinkizi', parishes: ['Kinkizi', 'Kayonza'] },
+      { name: 'Bwindi', parishes: ['Bwindi', 'Mpungu'] }
+    ]
+  },
+  {
+    name: 'Kisoro',
+    region: 'Western',
+    code: 'KIS',
+    subcounties: [
+      { name: 'Kisoro Municipality', parishes: ['Kisoro Central', 'Nyakabande'] },
+      { name: 'Bufumbira', parishes: ['Nyundo', 'Muramba', 'Cyanika'] },
+      { name: 'Nyarusiza', parishes: ['Nyarusiza', 'Nkanka'] }
+    ]
+  },
+  {
+    name: 'Ibanda',
+    region: 'Western',
+    code: 'IBA',
+    subcounties: [
+      { name: 'Ibanda Municipality', parishes: ['Ibanda Central', 'Kagongo'] },
+      { name: 'Ishongororo', parishes: ['Ishongororo', 'Kikyenkye'] },
+      { name: 'Nyamarebe', parishes: ['Nyamarebe', 'Rukiri'] }
+    ]
+  },
+  {
+    name: 'Kamwenge',
+    region: 'Western',
+    code: 'KMW',
+    subcounties: [
+      { name: 'Kamwenge Town Council', parishes: ['Kamwenge', 'Mahyoro'] },
+      { name: 'Kibale', parishes: ['Kibale', 'Ntara'] },
+      { name: 'Kahunge', parishes: ['Kahunge', 'Biguli'] }
+    ]
+  },
+  {
+    name: 'Kyenjojo',
+    region: 'Western',
+    code: 'KYE',
+    subcounties: [
+      { name: 'Kyenjojo Town Council', parishes: ['Kyenjojo', 'Katooke'] },
+      { name: 'Kyarusozi', parishes: ['Kyarusozi', 'Butunduzi'] },
+      { name: 'Kihuura', parishes: ['Kihuura', 'Hapuuyo'] }
+    ]
+  },
+  {
+    name: 'Bundibugyo',
+    region: 'Western',
+    code: 'BUN',
+    subcounties: [
+      { name: 'Bundibugyo Town Council', parishes: ['Bundibugyo', 'Nyahuka'] },
+      { name: 'Busaru', parishes: ['Busaru', 'Kirumya'] },
+      { name: 'Harugali', parishes: ['Harugali', 'Mirambi'] }
+    ]
+  },
+
+  // ============ NORTHERN REGION ============
+  {
+    name: 'Gulu',
+    region: 'Northern',
+    code: 'GUL',
+    subcounties: [
+      { name: 'Gulu Municipality', parishes: ['Gulu Central', 'Layibi', 'Bardege', 'Laroo', 'Pecetokwero'] },
+      { name: 'Bungatira', parishes: ['Bungatira', 'Unyama', 'Lalogi'] },
+      { name: 'Awach', parishes: ['Awach', 'Paicho'] },
+      { name: 'Patiko', parishes: ['Patiko', 'Lakwana'] }
     ]
   },
   {
@@ -196,9 +452,152 @@ const DISTRICTS_DATA = [
     region: 'Northern',
     code: 'LIR',
     subcounties: [
-      { name: 'Lira Municipality', parishes: ['Lira', 'Adyel', 'Ojwina'] },
-      { name: 'Aromo', parishes: ['Aromo'] },
-      { name: 'Barr', parishes: ['Barr'] }
+      { name: 'Lira Municipality', parishes: ['Lira Central', 'Adyel', 'Ojwina', 'Railway'] },
+      { name: 'Aromo', parishes: ['Aromo', 'Agweng'] },
+      { name: 'Barr', parishes: ['Barr', 'Agali'] },
+      { name: 'Ogur', parishes: ['Ogur', 'Amach'] }
+    ]
+  },
+  {
+    name: 'Arua',
+    region: 'Northern',
+    code: 'ARU',
+    subcounties: [
+      { name: 'Arua Municipality', parishes: ['Arua Central', 'Oli', 'Adumi'] },
+      { name: 'Ayivu', parishes: ['Ayivu', 'Manibe', 'Oluko'] },
+      { name: 'Maracha', parishes: ['Maracha', 'Nyadri'] },
+      { name: 'Terego', parishes: ['Terego', 'Omugo'] }
+    ]
+  },
+  {
+    name: 'Kitgum',
+    region: 'Northern',
+    code: 'KIT',
+    subcounties: [
+      { name: 'Kitgum Municipality', parishes: ['Kitgum Central', 'Pandwong'] },
+      { name: 'Mucwini', parishes: ['Mucwini', 'Labongo Akwang'] },
+      { name: 'Namokora', parishes: ['Namokora', 'Orom'] },
+      { name: 'Lamwo', parishes: ['Lamwo', 'Padibe'] }
+    ]
+  },
+  {
+    name: 'Pader',
+    region: 'Northern',
+    code: 'PAD',
+    subcounties: [
+      { name: 'Pader Town Council', parishes: ['Pader', 'Atanga'] },
+      { name: 'Acholi-Bur', parishes: ['Acholi-Bur', 'Awere'] },
+      { name: 'Lapul', parishes: ['Lapul', 'Ogom'] }
+    ]
+  },
+  {
+    name: 'Apac',
+    region: 'Northern',
+    code: 'APC',
+    subcounties: [
+      { name: 'Apac Municipality', parishes: ['Apac Central', 'Akokoro'] },
+      { name: 'Kwania', parishes: ['Kwania', 'Chegere'] },
+      { name: 'Aduku', parishes: ['Aduku', 'Ibuje'] }
+    ]
+  },
+  {
+    name: 'Nebbi',
+    region: 'Northern',
+    code: 'NEB',
+    subcounties: [
+      { name: 'Nebbi Municipality', parishes: ['Nebbi Central', 'Nyaravur'] },
+      { name: 'Pakwach', parishes: ['Pakwach', 'Panyimur'] },
+      { name: 'Wadelai', parishes: ['Wadelai', 'Erussi'] }
+    ]
+  },
+  {
+    name: 'Moyo',
+    region: 'Northern',
+    code: 'MOY',
+    subcounties: [
+      { name: 'Moyo Town Council', parishes: ['Moyo', 'Dufile'] },
+      { name: 'Obongi', parishes: ['Obongi', 'Itula'] },
+      { name: 'Lefori', parishes: ['Lefori', 'Metu'] }
+    ]
+  },
+  {
+    name: 'Adjumani',
+    region: 'Northern',
+    code: 'ADJ',
+    subcounties: [
+      { name: 'Adjumani Town Council', parishes: ['Adjumani', 'Ciforo'] },
+      { name: 'Pakele', parishes: ['Pakele', 'Ofua'] },
+      { name: 'Dzaipi', parishes: ['Dzaipi', 'Adropi'] }
+    ]
+  },
+  {
+    name: 'Kotido',
+    region: 'Northern',
+    code: 'KOT',
+    subcounties: [
+      { name: 'Kotido Town Council', parishes: ['Kotido', 'Rengen'] },
+      { name: 'Nakapelimoru', parishes: ['Nakapelimoru', 'Kacheri'] },
+      { name: 'Panyangara', parishes: ['Panyangara', 'Kanawat'] }
+    ]
+  },
+  {
+    name: 'Moroto',
+    region: 'Northern',
+    code: 'MOR',
+    subcounties: [
+      { name: 'Moroto Municipality', parishes: ['Moroto Central', 'Nadunget'] },
+      { name: 'Rupa', parishes: ['Rupa', 'Katikekile'] },
+      { name: 'Tapac', parishes: ['Tapac', 'Lotome'] }
+    ]
+  },
+  {
+    name: 'Amuru',
+    region: 'Northern',
+    code: 'AMU',
+    subcounties: [
+      { name: 'Amuru Town Council', parishes: ['Amuru', 'Atiak'] },
+      { name: 'Atiak', parishes: ['Atiak', 'Bibia'] },
+      { name: 'Lamogi', parishes: ['Lamogi', 'Pabbo'] }
+    ]
+  },
+  {
+    name: 'Nwoya',
+    region: 'Northern',
+    code: 'NWO',
+    subcounties: [
+      { name: 'Anaka Town Council', parishes: ['Anaka', 'Koch-Goma'] },
+      { name: 'Alero', parishes: ['Alero', 'Purongo'] },
+      { name: 'Koch-Goma', parishes: ['Koch-Goma', 'Got-Apwoyo'] }
+    ]
+  },
+  {
+    name: 'Oyam',
+    region: 'Northern',
+    code: 'OYA',
+    subcounties: [
+      { name: 'Oyam Town Council', parishes: ['Oyam', 'Aber'] },
+      { name: 'Minakulu', parishes: ['Minakulu', 'Acaba'] },
+      { name: 'Ngai', parishes: ['Ngai', 'Iceme'] }
+    ]
+  },
+  {
+    name: 'Dokolo',
+    region: 'Northern',
+    code: 'DOK',
+    subcounties: [
+      { name: 'Dokolo Town Council', parishes: ['Dokolo', 'Bata'] },
+      { name: 'Kangai', parishes: ['Kangai', 'Agwata'] },
+      { name: 'Amolatar', parishes: ['Amolatar', 'Namasale'] }
+    ]
+  },
+  {
+    name: 'Kaabong',
+    region: 'Northern',
+    code: 'KAB',
+    subcounties: [
+      { name: 'Kaabong Town Council', parishes: ['Kaabong', 'Kapedo'] },
+      { name: 'Sidok', parishes: ['Sidok', 'Kathile'] },
+      { name: 'Dodoth', parishes: ['Lodiko', 'Kalapata'] }
     ]
   }
 ];

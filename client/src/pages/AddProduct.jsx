@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import CategorySelector from '../components/CategorySelector';
 import LocationSelector from '../components/LocationSelector';
 import FieldsContainer from '../components/FieldsContainer';
-import { getFieldsForSubcategory, getSubcategoryConfig } from '../utils/subcategoryFields';
+import { getFieldsForSubcategory } from '../utils/subcategoryFields';
 
 export default function AddProduct() {
   const [formData, setFormData] = useState({
@@ -19,6 +19,7 @@ export default function AddProduct() {
     },
     regularPrice: 0,
     discountedPrice: 0,
+    countInStock: 1,
     offer: false,
     negotiable: false,
     category: '',
@@ -26,7 +27,6 @@ export default function AddProduct() {
     imageUrls: [],
     imagePublicIds: [],
     details: {},
-    countInStock: 0,
   });
 
   const { currentUser } = useSelector(state => state.user);
@@ -151,22 +151,6 @@ export default function AddProduct() {
     setError(false);
     setLoading(true);
 
-    // Validate subcategory required fields
-    try {
-      const cfg = getSubcategoryConfig(formData.category, formData.subCategory);
-      const missing = (cfg.required || []).filter((f) => {
-        // treat 0 or false as valid values, only reject null/undefined/empty string
-        const v = formData.details?.[f];
-        return v === undefined || v === null || (typeof v === 'string' && v.trim() === '');
-      });
-      if (missing.length > 0) {
-        setLoading(false);
-        return setError(`Please fill required fields: ${missing.join(', ')}`);
-      }
-    } catch {
-      // ignore
-    }
-
     try {
       const apiBase = import.meta.env.VITE_API_URL || '';
       const payload = {
@@ -212,14 +196,8 @@ export default function AddProduct() {
       <h1 className='text-2xl sm:text-3xl font-bold text-ui-primary mb-6'>
         Post Your Agriculture Product
       </h1>
+
       <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Location - always visible so users can pick micro-locations early */}
-            <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-sm">
-              <LocationSelector
-                location={formData.location}
-                onChange={handleLocationChange}
-              />
-            </div>
         {/* Step 1: Category Selection */}
         <div className="bg-surface p-4 sm:p-6 rounded-lg border border-ui shadow-sm">
           <CategorySelector
@@ -229,7 +207,15 @@ export default function AddProduct() {
           />
         </div>
 
-        {/* Step 2: Location (moved above so it's always visible) */}
+        {/* Step 2: Location */}
+        {formData.category && formData.subCategory && (
+          <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-sm">
+            <LocationSelector
+              location={formData.location}
+              onChange={handleLocationChange}
+            />
+          </div>
+        )}
 
         {/* Step 3: Basic Info */}
         {formData.location.district && formData.location.subcounty && (
@@ -302,21 +288,6 @@ export default function AddProduct() {
             </h3>
 
             <div className="space-y-4">
-                <div>
-                  <label htmlFor="countInStock" className="block text-sm font-medium text-ui-muted mb-2">
-                    Quantity in Stock <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    id="countInStock"
-                    value={formData.countInStock}
-                    onChange={handleChange}
-                    placeholder="0"
-                    min="0"
-                    required
-                    className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px]"
-                  />
-                </div>
               <div>
                 <label htmlFor="regularPrice" className="block text-sm font-medium text-ui-muted mb-2">
                   Price (UGX) <span className="text-red-500">*</span>
@@ -327,6 +298,22 @@ export default function AddProduct() {
                   value={formData.regularPrice}
                   onChange={handleChange}
                   placeholder="50000"
+                  min="0"
+                  required
+                  className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px]"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="countInStock" className="block text-sm font-medium text-ui-muted mb-2">
+                  Stock Quantity <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="countInStock"
+                  value={formData.countInStock}
+                  onChange={handleChange}
+                  placeholder="1"
                   min="0"
                   required
                   className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px]"

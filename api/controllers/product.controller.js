@@ -89,6 +89,38 @@ export const createProduct = async (req, res, next) => {
   }
 };
 
+// @desc    Upload product images (standalone, for two-step creation flow)
+export const uploadProductImages = async (req, res, next) => {
+  try {
+    if (!req.files || req.files.length < 1) {
+      return res.status(400).json({ success: false, message: 'No images provided.' });
+    }
+
+    const cloudinary = (await import('../utils/cloudinary.js')).default;
+    const uploadPromises = req.files.map(async (file) => {
+      const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+      const result = await cloudinary.uploader.upload(dataUri, {
+        folder: 'Nguza_products',
+        transformation: [{ width: 1200, height: 800, crop: 'limit', quality: 'auto:good' }],
+      });
+      return { url: result.secure_url || result.url, public_id: result.public_id };
+    });
+
+    const results = await Promise.all(uploadPromises);
+    const imageUrls = results.map(r => r.url);
+    const publicIds = results.map(r => r.public_id);
+
+    res.status(200).json({
+      success: true,
+      imageUrls,
+      publicIds,
+      images: results,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get all products
 export const getProducts = async (req, res) => {
   try {
