@@ -26,6 +26,7 @@ export default function AddProduct() {
     imageUrls: [],
     imagePublicIds: [],
     details: {},
+    countInStock: 0,
   });
 
   const { currentUser } = useSelector(state => state.user);
@@ -301,6 +302,21 @@ export default function AddProduct() {
             </h3>
 
             <div className="space-y-4">
+                <div>
+                  <label htmlFor="countInStock" className="block text-sm font-medium text-ui-muted mb-2">
+                    Quantity in Stock <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="countInStock"
+                    value={formData.countInStock}
+                    onChange={handleChange}
+                    placeholder="0"
+                    min="0"
+                    required
+                    className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px]"
+                  />
+                </div>
               <div>
                 <label htmlFor="regularPrice" className="block text-sm font-medium text-ui-muted mb-2">
                   Price (UGX) <span className="text-red-500">*</span>
