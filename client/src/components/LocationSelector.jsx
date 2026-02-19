@@ -5,6 +5,7 @@ export default function LocationSelector({ location, onChange }) {
   const [districts, setDistricts] = useState([]);
   const [subcounties, setSubcounties] = useState([]);
   const [parishes, setParishes] = useState([]);
+  const [villages, setVillages] = useState([]);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [loadingSubcounties, setLoadingSubcounties] = useState(false);
   const [loadingParishes, setLoadingParishes] = useState(false);
@@ -77,8 +78,33 @@ export default function LocationSelector({ location, onChange }) {
       fetchParishes(location.district, location.subcounty);
     } else {
       setParishes([]);
+      setVillages([]);
     }
   }, [location.district, location.subcounty, apiBase]);
+
+  // Fetch villages when parish changes (optional - will return [] if not present)
+  useEffect(() => {
+    if (location.district && location.subcounty && location.parish) {
+      const fetchVillages = async (district, subcounty, parish) => {
+        try {
+          setLoadingParishes(true);
+          const res = await fetch(`${apiBase}/api/reference/districts/${encodeURIComponent(district)}/subcounties/${encodeURIComponent(subcounty)}/parishes/${encodeURIComponent(parish)}/villages`);
+          const data = await res.json();
+          if (data.success) {
+            setVillages(data.villages || []);
+          }
+        } catch (error) {
+          console.error('Error fetching villages:', error);
+        } finally {
+          setLoadingParishes(false);
+        }
+      };
+
+      fetchVillages(location.district, location.subcounty, location.parish);
+    } else {
+      setVillages([]);
+    }
+  }, [location.district, location.subcounty, location.parish, apiBase]);
 
   
 
@@ -185,15 +211,30 @@ export default function LocationSelector({ location, onChange }) {
       {/* Village (Optional) */}
       <div>
         <label htmlFor="village" className="block text-sm font-medium text-ui-muted mb-2">Village (Optional)</label>
-        <input
-          type="text"
-          id="village"
-          value={location.village || ''}
-          onChange={handleVillageChange}
-          placeholder="Enter village name"
-          disabled={!location.subcounty}
-          className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px] disabled:bg-surface"
-        />
+        {villages && villages.length > 0 ? (
+          <select
+            id="village"
+            value={location.village || ''}
+            onChange={handleVillageChange}
+            disabled={!location.parish || loadingParishes}
+            className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px] disabled:bg-surface"
+          >
+            <option value="">Select Village</option>
+            {villages.map(v => (
+              <option key={v} value={v}>{v}</option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type="text"
+            id="village"
+            value={location.village || ''}
+            onChange={handleVillageChange}
+            placeholder="Enter village name"
+            disabled={!location.subcounty}
+            className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px] disabled:bg-surface"
+          />
+        )}
       </div>
 
       {/* Location Summary */}

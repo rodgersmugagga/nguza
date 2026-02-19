@@ -77,6 +77,42 @@ export const getParishes = async (req, res, next) => {
   }
 };
 
+// Get villages for a parish (if villages are stored in the district document)
+export const getVillages = async (req, res, next) => {
+  try {
+    const { district, subcounty, parish } = req.params;
+
+    const districtDoc = await District.findOne({ name: district }).lean();
+
+    if (!districtDoc) {
+      return res.status(404).json({ message: 'District not found' });
+    }
+
+    const subcountyDoc = districtDoc.subcounties?.find(s => s.name === subcounty);
+
+    if (!subcountyDoc) {
+      return res.status(404).json({ message: 'Subcounty not found' });
+    }
+
+    // Parishes can be stored as strings or objects with a villages array.
+    const parishEntry = (subcountyDoc.parishes || []).find(p => {
+      if (typeof p === 'string') return p === parish;
+      return p.name === parish;
+    });
+
+    if (!parishEntry) {
+      return res.status(404).json({ message: 'Parish not found' });
+    }
+
+    const villages = typeof parishEntry === 'string' ? (parishEntry.villages || []) : (parishEntry.villages || []);
+
+    return res.status(200).json({ success: true, district: districtDoc.name, subcounty: subcountyDoc.name, parish, villages });
+  } catch (error) {
+    console.error('Get villages error:', error);
+    next(error);
+  }
+};
+
 // Get all crop types
 export const getCropTypes = async (req, res, next) => {
   try {

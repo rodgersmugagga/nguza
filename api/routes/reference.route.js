@@ -3,6 +3,7 @@ import {
   getDistricts,
   getSubcounties,
   getParishes,
+  getVillages,
   getCropTypes,
   getLivestockBreeds,
   getCategories,
@@ -15,6 +16,7 @@ const router = express.Router();
 router.get('/districts', getDistricts);
 router.get('/districts/:district/subcounties', getSubcounties);
 router.get('/districts/:district/subcounties/:subcounty/parishes', getParishes);
+router.get('/districts/:district/subcounties/:subcounty/parishes/:parish/villages', getVillages);
 
 // Agriculture reference data
 router.get('/crop-types', getCropTypes);
