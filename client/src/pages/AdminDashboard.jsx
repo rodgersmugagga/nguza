@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -11,43 +11,47 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [vendors, setVendors] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('stats');
 
   const API_URL = import.meta.env.VITE_API_URL || '';
 
-  useEffect(() => {
-    fetchAdminData();
-  }, [currentUser.token]);
-
-  const fetchAdminData = async () => {
+  const fetchAdminData = useCallback(async () => {
     setLoading(true);
     try {
       const headers = { Authorization: `Bearer ${currentUser.token}` };
-      const [statsRes, usersRes, productsRes, ordersRes] = await Promise.all([
+      const [statsRes, usersRes, productsRes, ordersRes, vendorsRes] = await Promise.all([
         fetch(`${API_URL}/api/admin/stats`, { headers }),
         fetch(`${API_URL}/api/admin/users`, { headers }),
         fetch(`${API_URL}/api/admin/products`, { headers }),
-        fetch(`${API_URL}/api/admin/orders`, { headers })
+        fetch(`${API_URL}/api/admin/orders`, { headers }),
+        fetch(`${API_URL}/api/admin/vendors/pending`, { headers })
       ]);
 
       const statsData = await statsRes.json();
       const usersData = await usersRes.json();
       const productsData = await productsRes.json();
       const ordersData = await ordersRes.json();
+      const vendorsData = await vendorsRes.json();
 
       if (statsRes.ok) setStats(statsData.stats);
       if (usersRes.ok) setUsers(usersData.users || []);
       if (productsRes.ok) setProducts(productsData.products || []);
       if (ordersRes.ok) setOrders(ordersData.orders || []);
+      if (vendorsRes.ok) setVendors(vendorsData.vendors || []);
 
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, currentUser.token]);
+
+  useEffect(() => {
+    fetchAdminData();
+  }, [fetchAdminData]);
 
   const handleAction = async (path, method = 'PUT', body = null) => {
     try {
@@ -113,7 +117,8 @@ export default function AdminDashboard() {
               { id: 'stats', label: 'Monitor', icon: FaChartLine },
               { id: 'users', label: 'Users', icon: FaUsers },
               { id: 'products', label: 'Products', icon: FaBox },
-              { id: 'orders', label: 'Orders', icon: FaShoppingBag }
+              { id: 'orders', label: 'Orders', icon: FaShoppingBag },
+              { id: 'vendors', label: 'Vendors', icon: FaShieldAlt }
             ].map(t => (
               <button key={t.id} onClick={() => setActiveTab(t.id)} className={`px-8 py-5 text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === t.id ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:bg-gray-50'}`}>
                 <t.icon /> {t.label}
@@ -122,6 +127,40 @@ export default function AdminDashboard() {
           </div>
 
           <div className="p-8">
+            {activeTab === 'vendors' && (
+              <table className="w-full text-left mb-6">
+                <thead className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  <tr><th className="pb-4">Business</th><th className="pb-4">Owner</th><th className="pb-4">Contact</th><th className="pb-4">Status</th><th className="pb-4 text-right">Actions</th></tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {vendors.map(v => (
+                    <tr key={v._id} className="group hover:bg-gray-50/50">
+                      <td className="py-4">
+                        <div className="flex items-center gap-3">
+                          <img src={v.vendorProfile?.businessLogo} className="w-10 h-10 rounded-xl object-cover bg-gray-100" />
+                          <div><p className="font-black text-gray-900 line-clamp-1">{v.vendorProfile?.businessName || '—'}</p><p className="text-[10px] text-gray-400">{v.vendorProfile?.businessDescription}</p></div>
+                        </div>
+                      </td>
+                      <td className="py-4 font-bold text-xs">{v.username}</td>
+                      <td className="py-4 text-[12px]">{v.phoneNumber || v.email}</td>
+                      <td className="py-4">
+                        <span className={`px-2 py-1 rounded-full text-[10px] font-black ${v.vendorProfile?.verificationStatus === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                          {v.vendorProfile?.verificationStatus}
+                        </span>
+                      </td>
+                      <td className="py-4 text-right flex justify-end gap-2">
+                        <button onClick={() => handleAction(`vendors/${v._id}/accept`, 'PUT')} className="p-2 text-emerald-600 bg-emerald-50 rounded-xl"><FaCheck size={12} /></button>
+                        <button onClick={async () => {
+                          const reason = window.prompt('Reason for rejection (optional):');
+                          if (reason === null) return; // cancelled
+                          await handleAction(`vendors/${v._id}/reject`, 'PUT', { reason });
+                        }} className="p-2 text-red-600 bg-red-50 rounded-xl"><FaTimes size={12} /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
             {activeTab === 'users' && (
               <table className="w-full text-left">
                 <thead className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
