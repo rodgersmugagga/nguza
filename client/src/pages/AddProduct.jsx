@@ -195,8 +195,14 @@ export default function AddProduct() {
       <h1 className='text-2xl sm:text-3xl font-bold text-ui-primary mb-6'>
         Post Your Agriculture Product
       </h1>
-
       <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Location - always visible so users can pick micro-locations early */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-sm">
+              <LocationSelector
+                location={formData.location}
+                onChange={handleLocationChange}
+              />
+            </div>
         {/* Step 1: Category Selection */}
         <div className="bg-surface p-4 sm:p-6 rounded-lg border border-ui shadow-sm">
           <CategorySelector
@@ -206,15 +212,7 @@ export default function AddProduct() {
           />
         </div>
 
-        {/* Step 2: Location */}
-        {formData.category && formData.subCategory && (
-          <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-sm">
-            <LocationSelector
-              location={formData.location}
-              onChange={handleLocationChange}
-            />
-          </div>
-        )}
+        {/* Step 2: Location (moved above so it's always visible) */}
 
         {/* Step 3: Basic Info */}
         {formData.location.district && formData.location.subcounty && (
