@@ -48,7 +48,7 @@ const About = () => {
             "@type": "Organization",
             "name": "Nguza",
             "url": "https://nguza.onrender.com",
-            "logo": "https://nguza.onrender.com/logo.svg",
+            "logo": "https://nguza.onrender.com/logo.png",
             "description": "A marketplace for agricultural goods and services in Uganda.",
             "sameAs": [
               "https://twitter.com/nguza",
@@ -72,7 +72,7 @@ const About = () => {
         {/* Hero / Brand Image */}
         <div style={{ marginBottom: "30px", display: "flex", justifyContent: "center" }}>
           <img
-            src="/logo.svg"
+            src="/logo.png"
             alt="Nguza logo"
             style={{ width: "140px", height: "140px", objectFit: "contain" }}
           />

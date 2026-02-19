@@ -85,7 +85,7 @@ export default function AdminProductModeration() {
         {products.map((p) => (
           <div key={p._id} className='bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all group ring-1 ring-gray-100'>
             <div className="h-56 relative overflow-hidden">
-              <img src={p.imageUrls?.[0] || "/favicon.svg"} alt={p.name} className='w-full h-full object-cover transition-transform group-hover:scale-105 duration-700' />
+              <img src={p.imageUrls?.[0] || "/favicon.png"} alt={p.name} className='w-full h-full object-cover transition-transform group-hover:scale-105 duration-700' />
               <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-widest italic">
                 {p.category}
               </div>

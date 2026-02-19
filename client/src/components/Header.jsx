@@ -105,7 +105,7 @@ export default function Header() {
               </Link>
               {currentUser && (
                 <Link to="/profile">
-                  <img className="rounded-full h-8 w-8 object-cover border-2 border-emerald-600" src={currentUser?.user?.avatar || '/favicon.svg'} alt="profile" />
+                  <img className="rounded-full h-8 w-8 object-cover border-2 border-emerald-600" src={currentUser?.user?.avatar || '/favicon.png'} alt="profile" />
                 </Link>
               )}
             </div>
@@ -204,7 +204,7 @@ export default function Header() {
 
             {currentUser && (
               <Link to="/profile" className="flex-shrink-0 h-10 w-10 border-2 border-emerald-600 rounded-full overflow-hidden hover:border-amber-400 transition-all p-0.5">
-                <img className="rounded-full h-full w-full object-cover" src={currentUser?.user?.avatar || '/favicon.svg'} alt="profile" />
+                <img className="rounded-full h-full w-full object-cover" src={currentUser?.user?.avatar || '/favicon.png'} alt="profile" />
               </Link>
             )}
           </div>

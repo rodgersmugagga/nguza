@@ -2,8 +2,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
 import SafeHelmet from "../components/SafeHelmet.jsx";
 import {
-  deleteUserFailure,
-  deleteUserStart,
+  // deleteUserFailure,
+  // deleteUserStart,
   deleteUserSuccess,
   SignOutUserStart,
   updateUserStart,
@@ -155,7 +155,7 @@ export default function Profile() {
               <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100 text-center">
                 <div className="relative inline-block mx-auto mb-6 group cursor-pointer" onClick={() => fileRef.current.click()}>
                   <div className="w-32 h-32 rounded-[2.5rem] bg-gray-50 flex items-center justify-center p-1 shadow-xl ring-4 ring-white">
-                    <img className="w-full h-full object-cover rounded-[2rem]" src={previewUrl || currentUser?.user?.avatar || '/favicon.svg'} alt="Profile" />
+                    <img className="w-full h-full object-cover rounded-[2rem]" src={previewUrl || currentUser?.user?.avatar || '/favicon.png'} alt="Profile" />
                   </div>
                   <div className="absolute bottom-0 right-0 bg-emerald-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center border-4 border-white">
                     <FaCamera size={14} />
@@ -219,7 +219,7 @@ export default function Profile() {
                     {userProducts.map((p) => (
                       <div key={p._id} className="bg-white rounded-[2rem] p-4 sm:p-5 border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-6">
                         <Link to={`/product/${p._id}`} className="w-full sm:w-48 h-40 flex-shrink-0 overflow-hidden rounded-2xl">
-                          <img src={p.imageUrls?.[0] || "/favicon.svg"} alt={p.name} className="w-full h-full object-cover" />
+                          <img src={p.imageUrls?.[0] || "/favicon.png"} alt={p.name} className="w-full h-full object-cover" />
                         </Link>
                         <div className="flex-1 flex flex-col justify-between py-2">
                           <div>

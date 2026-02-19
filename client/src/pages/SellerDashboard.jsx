@@ -124,7 +124,7 @@ export default function SellerDashboard() {
                     <tr key={p._id} className="hover:bg-gray-50/50 transition-colors group">
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <img src={p.imageUrls?.[0] || "/favicon.svg"} alt={p.name} className="w-14 h-14 rounded-2xl object-cover bg-gray-50 shadow-sm" />
+                          <img src={p.imageUrls?.[0] || "/favicon.png"} alt={p.name} className="w-14 h-14 rounded-2xl object-cover bg-gray-50 shadow-sm" />
                           <div>
                             <Link to={`/product/${p._id}`} className="font-black text-gray-900 hover:text-emerald-700 transition-colors line-clamp-1">{p.name}</Link>
                             <p className="text-[10px] font-bold text-gray-400 mt-0.5 uppercase tracking-wider">{p.subCategory}</p>
