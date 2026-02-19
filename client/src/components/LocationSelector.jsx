@@ -5,7 +5,9 @@ export default function LocationSelector({ location, onChange }) {
   const [districts, setDistricts] = useState([]);
   const [subcounties, setSubcounties] = useState([]);
   const [parishes, setParishes] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [loadingSubcounties, setLoadingSubcounties] = useState(false);
+  const [loadingParishes, setLoadingParishes] = useState(false);
 
   const apiBase = import.meta.env.VITE_API_URL || '';
 
@@ -13,7 +15,7 @@ export default function LocationSelector({ location, onChange }) {
   useEffect(() => {
     const fetchDistricts = async () => {
       try {
-        setLoading(true);
+        setLoadingDistricts(true);
         const res = await fetch(`${apiBase}/api/reference/districts`);
         const data = await res.json();
         if (data.success) {
@@ -22,7 +24,7 @@ export default function LocationSelector({ location, onChange }) {
       } catch (error) {
         console.error('Error fetching districts:', error);
       } finally {
-        setLoading(false);
+        setLoadingDistricts(false);
       }
     };
 
@@ -34,7 +36,7 @@ export default function LocationSelector({ location, onChange }) {
     if (location.district) {
       const fetchSubcounties = async (district) => {
         try {
-          setLoading(true);
+          setLoadingSubcounties(true);
           const res = await fetch(`${apiBase}/api/reference/districts/${encodeURIComponent(district)}/subcounties`);
           const data = await res.json();
           if (data.success) {
@@ -43,7 +45,7 @@ export default function LocationSelector({ location, onChange }) {
         } catch (error) {
           console.error('Error fetching subcounties:', error);
         } finally {
-          setLoading(false);
+          setLoadingSubcounties(false);
         }
       };
 
@@ -59,7 +61,7 @@ export default function LocationSelector({ location, onChange }) {
     if (location.district && location.subcounty) {
       const fetchParishes = async (district, subcounty) => {
         try {
-          setLoading(true);
+          setLoadingParishes(true);
           const res = await fetch(`${apiBase}/api/reference/districts/${encodeURIComponent(district)}/subcounties/${encodeURIComponent(subcounty)}/parishes`);
           const data = await res.json();
           if (data.success) {
@@ -68,7 +70,7 @@ export default function LocationSelector({ location, onChange }) {
         } catch (error) {
           console.error('Error fetching parishes:', error);
         } finally {
-          setLoading(false);
+          setLoadingParishes(false);
         }
       };
 
@@ -129,7 +131,7 @@ export default function LocationSelector({ location, onChange }) {
           value={location.district || ''}
           onChange={handleDistrictChange}
           required
-          disabled={loading}
+          disabled={loadingDistricts}
           className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px]"
         >
           <option value="">Select District</option>
@@ -149,7 +151,7 @@ export default function LocationSelector({ location, onChange }) {
           value={location.subcounty || ''}
           onChange={handleSubcountyChange}
           required
-          disabled={!location.district || loading}
+          disabled={!location.district || loadingSubcounties}
           className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px] disabled:bg-surface"
         >
           <option value="">Select Subcounty</option>
@@ -168,7 +170,7 @@ export default function LocationSelector({ location, onChange }) {
           id="parish"
           value={location.parish || ''}
           onChange={handleParishChange}
-          disabled={!location.subcounty || loading}
+          disabled={!location.subcounty || loadingParishes}
           className="w-full p-3 border border-ui rounded-lg focus-ring text-base min-h-[48px] disabled:bg-surface"
         >
           <option value="">Select Parish</option>
