@@ -1,5 +1,5 @@
 const SITE_NAME = 'Nguza';
-const SITE_URL = 'https://harvemart.onrender.com';
+const SITE_URL = 'https://nguza.onrender.com';
 
 // Comprehensive Uganda city/neighborhood data with search variations
 const UG_CITIES = [

@@ -23,13 +23,13 @@ const About = () => {
           content="Nguza, agriculture marketplace, crops, livestock, farm inputs, farming equipment, agricultural services, Uganda"
         />
         <meta name="author" content="Nguza" />
-        <link rel="canonical" href="https://harvemart.onrender.com/about" />
+  <link rel="canonical" href="https://nguza.onrender.com/about" />
 
         {/* Open Graph */}
         <meta property="og:title" content="About Nguza — Agriculture Marketplace" />
         <meta property="og:description" content="Nguza connects farmers and buyers with crops, livestock, farm inputs, equipment and services across Uganda." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://harvemart.onrender.com/about" />
+  <meta property="og:url" content="https://nguza.onrender.com/about" />
         <meta property="og:site_name" content="Nguza" />
 
         {/* Twitter Card */}
@@ -47,12 +47,12 @@ const About = () => {
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "Nguza",
-            "url": "https://harvemart.onrender.com",
-            "logo": "https://harvemart.onrender.com/logo.svg",
+            "url": "https://nguza.onrender.com",
+            "logo": "https://nguza.onrender.com/logo.svg",
             "description": "A marketplace for agricultural goods and services in Uganda.",
             "sameAs": [
-              "https://twitter.com/harvemart",
-              "https://facebook.com/harvemart"
+              "https://twitter.com/nguza",
+              "https://facebook.com/nguza"
             ],
             "address": {
               "@type": "PostalAddress",
@@ -62,7 +62,7 @@ const About = () => {
             "contactPoint": {
               "@type": "ContactPoint",
               "contactType": "Customer Support",
-              "email": "support@harvemart.onrender.com"
+              "email": "support@nguza.onrender.com"
             }
           })}
         </script>
@@ -116,7 +116,7 @@ const About = () => {
         </p>
 
         <p style={{ fontSize: "0.95rem", color: "#888" }}>
-          Contact support: <a href="mailto:support@harvemart.onrender.com" style={{ color: "#888" }}>support@harvemart.onrender.com</a>
+          Contact support: <a href="mailto:support@nguza.onrender.com" style={{ color: "#888" }}>support@nguza.onrender.com</a>
         </p>
       </div>
     </section>
