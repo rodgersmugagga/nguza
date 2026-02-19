@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import CategorySelector from '../components/CategorySelector';
 import LocationSelector from '../components/LocationSelector';
 import FieldsContainer from '../components/FieldsContainer';
-import { getFieldsForSubcategory } from '../utils/subcategoryFields';
+import { getFieldsForSubcategory, getSubcategoryConfig } from '../utils/subcategoryFields';
 
 export default function AddProduct() {
   const [formData, setFormData] = useState({
@@ -149,6 +149,22 @@ export default function AddProduct() {
 
     setError(false);
     setLoading(true);
+
+    // Validate subcategory required fields
+    try {
+      const cfg = getSubcategoryConfig(formData.category, formData.subCategory);
+      const missing = (cfg.required || []).filter((f) => {
+        // treat 0 or false as valid values, only reject null/undefined/empty string
+        const v = formData.details?.[f];
+        return v === undefined || v === null || (typeof v === 'string' && v.trim() === '');
+      });
+      if (missing.length > 0) {
+        setLoading(false);
+        return setError(`Please fill required fields: ${missing.join(', ')}`);
+      }
+    } catch {
+      // ignore
+    }
 
     try {
       const apiBase = import.meta.env.VITE_API_URL || '';
