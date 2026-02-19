@@ -9,11 +9,46 @@ const DISTRICTS_DATA = [
     region: 'Central',
     code: 'KLA',
     subcounties: [
-      { name: 'Central Division', parishes: ['Nakasero', 'Kololo', 'Kampala Central'] },
-      { name: 'Kawempe Division', parishes: ['Kawempe', 'Kazo', 'Makerere'] },
-      { name: 'Makindye Division', parishes: ['Makindye', 'Kibuye', 'Nsambya'] },
-      { name: 'Nakawa Division', parishes: ['Nakawa', 'Ntinda', 'Naguru'] },
-      { name: 'Rubaga Division', parishes: ['Rubaga', 'Namirembe', 'Lungujja'] }
+      {
+        name: 'Central Division',
+        parishes: [
+          { name: 'Nakasero', villages: ['Nakasero Hill', 'Kisozi', 'Kampala Road'] },
+          { name: 'Kololo', villages: ['Kololo North', 'Kololo Central', 'Kololo South'] },
+          { name: 'Kampala Central', villages: ['Market Area', 'City Centre'] }
+        ]
+      },
+      {
+        name: 'Kawempe Division',
+        parishes: [
+          { name: 'Kawempe', villages: ['Kawempe North', 'Kawempe South'] },
+          { name: 'Kazo', villages: ['Kazo A', 'Kazo B'] },
+          { name: 'Makerere', villages: ['Makerere 1', 'Makerere 2'] }
+        ]
+      },
+      {
+        name: 'Makindye Division',
+        parishes: [
+          { name: 'Makindye', villages: ['Makindye Central', 'Luzira Road'] },
+          { name: 'Kibuye', villages: ['Kibuye East', 'Kibuye West'] },
+          { name: 'Nsambya', villages: ['Nsambya Lower', 'Nsambya Upper'] }
+        ]
+      },
+      {
+        name: 'Nakawa Division',
+        parishes: [
+          { name: 'Nakawa', villages: ['Nakawa Industrial', 'Nakawa Estate'] },
+          { name: 'Ntinda', villages: ['Ntinda Central', 'Ntinda West'] },
+          { name: 'Naguru', villages: ['Naguru South', 'Naguru Hill'] }
+        ]
+      },
+      {
+        name: 'Rubaga Division',
+        parishes: [
+          { name: 'Rubaga', villages: ['Rubaga North', 'Rubaga Market'] },
+          { name: 'Namirembe', villages: ['Namirembe Hill'] },
+          { name: 'Lungujja', villages: ['Lungujja A', 'Lungujja B'] }
+        ]
+      }
     ]
   },
   {
@@ -21,9 +56,29 @@ const DISTRICTS_DATA = [
     region: 'Central',
     code: 'WAK',
     subcounties: [
-      { name: 'Kira', parishes: ['Kira', 'Kimwaanyi', 'Kasokoso'] },
-      { name: 'Entebbe', parishes: ['Entebbe', 'Katabi', 'Nakiwogo'] },
-      { name: 'Nangabo', parishes: ['Nangabo', 'Busukuma'] },
+      {
+        name: 'Kira',
+        parishes: [
+          { name: 'Kira', villages: ['Kira Town', 'Bweyogerere'] },
+          { name: 'Kimwaanyi', villages: ['Kimwaanyi A', 'Kimwaanyi B'] },
+          { name: 'Kasokoso', villages: ['Kasokoso 1'] }
+        ]
+      },
+      {
+        name: 'Entebbe',
+        parishes: [
+          { name: 'Entebbe', villages: ['Entebbe Town', 'Lubiri'] },
+          { name: 'Katabi', villages: ['Katabi Central'] },
+          { name: 'Nakiwogo', villages: ['Nakiwogo A'] }
+        ]
+      },
+      {
+        name: 'Nangabo',
+        parishes: [
+          { name: 'Nangabo', villages: ['Nangabo Centre'] },
+          { name: 'Busukuma', villages: ['Busukuma East'] }
+        ]
+      },
       { name: 'Kakiri', parishes: ['Kakiri', 'Gombe'] }
     ]
   },
@@ -32,9 +87,27 @@ const DISTRICTS_DATA = [
     region: 'Central',
     code: 'MUK',
     subcounties: [
-      { name: 'Mukono Town Council', parishes: ['Mukono', 'Namilyango'] },
-      { name: 'Goma', parishes: ['Goma', 'Seeta'] },
-      { name: 'Ntenjeru', parishes: ['Ntenjeru', 'Kimenyedde'] }
+      {
+        name: 'Mukono Town Council',
+        parishes: [
+          { name: 'Mukono', villages: ['Mukono Central', 'Mukono East'] },
+          { name: 'Namilyango', villages: ['Namilyango Hill'] }
+        ]
+      },
+      {
+        name: 'Goma',
+        parishes: [
+          { name: 'Goma', villages: ['Goma A'] },
+          { name: 'Seeta', villages: ['Seeta Central'] }
+        ]
+      },
+      {
+        name: 'Ntenjeru',
+        parishes: [
+          { name: 'Ntenjeru', villages: ['Ntenjeru A'] },
+          { name: 'Kimenyedde', villages: ['Kimenyedde Village'] }
+        ]
+      }
     ]
   },
   {
@@ -62,7 +135,14 @@ const DISTRICTS_DATA = [
     region: 'Western',
     code: 'MBA',
     subcounties: [
-      { name: 'Mbarara Municipality', parishes: ['Mbarara', 'Kamukuzi', 'Kakoba'] },
+      {
+        name: 'Mbarara Municipality',
+        parishes: [
+          { name: 'Mbarara', villages: ['Mbarara Central', 'Mbarara West'] },
+          { name: 'Kamukuzi', villages: ['Kamukuzi East'] },
+          { name: 'Kakoba', villages: ['Kakoba North'] }
+        ]
+      },
       { name: 'Rubaya', parishes: ['Rubaya'] },
       { name: 'Nyamitanga', parishes: ['Nyamitanga'] }
     ]
@@ -72,7 +152,14 @@ const DISTRICTS_DATA = [
     region: 'Eastern',
     code: 'JIN',
     subcounties: [
-      { name: 'Jinja Municipality', parishes: ['Jinja', 'Walukuba', 'Mpumudde'] },
+      {
+        name: 'Jinja Municipality',
+        parishes: [
+          { name: 'Jinja', villages: ['Jinja Town', 'Walukuba Road'] },
+          { name: 'Walukuba', villages: ['Walukuba North'] },
+          { name: 'Mpumudde', villages: ['Mpumudde Central'] }
+        ]
+      },
       { name: 'Butembe', parishes: ['Butembe'] },
       { name: 'Budondo', parishes: ['Budondo'] }
     ]
@@ -92,7 +179,14 @@ const DISTRICTS_DATA = [
     region: 'Eastern',
     code: 'MBL',
     subcounties: [
-      { name: 'Mbale Municipality', parishes: ['Mbale', 'Industrial Area', 'Namabasa'] },
+      {
+        name: 'Mbale Municipality',
+        parishes: [
+          { name: 'Mbale', villages: ['Mbale Central', 'Mbale North'] },
+          { name: 'Industrial Area', villages: ['Industrial Zone'] },
+          { name: 'Namabasa', villages: ['Namabasa A'] }
+        ]
+      },
       { name: 'Bungokho', parishes: ['Bungokho'] },
       { name: 'Bubulo', parishes: ['Bubulo'] }
     ]
