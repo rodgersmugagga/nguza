@@ -202,7 +202,7 @@ export const googleCallback = async (req, res, next) => {
   try {
     const user = req.user;
     if (!user) {
-      return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/sign-in?error=auth_failed`);
+      return res.redirect(`${process.env.CLIENT_URL || "http://localhost:3000"}/sign-in?error=auth_failed`);
     }
 
     // Generate JWT token
@@ -216,7 +216,7 @@ export const googleCallback = async (req, res, next) => {
     const { password, ...userData } = user._doc;
 
     // Redirect to frontend with token and user data
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
     const userJson = encodeURIComponent(JSON.stringify(userData));
 
     // Using query parameters to pass auth data to the frontend handler
