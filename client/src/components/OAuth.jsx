@@ -1,68 +1,24 @@
-import React from 'react'
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { app } from '../firebase';
-import { useDispatch } from 'react-redux';
-import { signInSuccess } from '../redux/user/userSlice';
-import { useNavigate } from 'react-router-dom';
-
-// Define OAuth component as default export 
+import React from 'react';
 
 export default function OAuth() {
-  // Hook to dispatch actions to Redux store  
-  const dispatch = useDispatch();
-
-  // Hook from react-router-dom to navigate programmatically after login  
-  const navigate = useNavigate();
-
-  // Function to handle Google sign-in button click
-
-  const handleGoogleClick = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const auth = getAuth(app);
-
-      const result = await signInWithPopup(auth, provider);
-
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const res = await fetch("/api/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: result.user.displayName,
-          email: result.user.email,
-          password: result.user.uid,
-          photo: result.user.photoURL
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        console.error("Google sign-in failed:", data.message || "Sign in failed");
-        return;
-      }
-
-      dispatch(signInSuccess(data));
-
-      localStorage.setItem("user", JSON.stringify(data));
-      console.log("Google sign-in successful:", data);
-
-      navigate("/"); // Redirect to home page after successful login
-
-
-
-    } catch (error) {
-      console.log("Could not sign in with google!", error)
-    }
-  }
+  const handleGoogleClick = () => {
+    // Redirect to backend Google auth route
+    // The backend handles the OAuth flow and redirects back to /auth-success
+    window.location.href = "/api/auth/google";
+  };
 
   return (
     <button
       onClick={handleGoogleClick}
-      type='button'
-      className="bg-red-500 text-white p-3 rounded-lg uppercase hover:opacity-95"
+      type="button"
+      className="flex items-center justify-center w-full py-4 border border-gray-100 bg-white rounded-2xl hover:bg-gray-50 transition-all active:scale-95 shadow-sm group"
     >
-      Continue with Google
+      <img
+        src="https://developers.google.com/identity/images/g-logo.png"
+        alt="Google"
+        className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform"
+      />
+      <span className="text-sm font-black text-gray-700 uppercase tracking-widest">Sign in with Google</span>
     </button>
-  )
+  );
 }

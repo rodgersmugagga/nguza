@@ -13,7 +13,7 @@ export default function BottomNav() {
   const navItems = [
     { icon: FaHome, label: 'Home', path: '/' },
     { icon: FaSearch, label: 'Search', path: '/search' },
-    { icon: FaPlusCircle, label: 'Sell', path: currentUser?.user?.role === 'seller' ? '/add-product' : '/register-vendor', highlight: true },
+    { icon: FaPlusCircle, label: 'Sell', path: currentUser ? (currentUser.user?.role === 'seller' ? '/add-product' : '/register-vendor') : '/sign-in', highlight: true },
     { icon: FaShoppingCart, label: 'Cart', path: '/cart', badge: cartItems.length },
     { icon: FaUser, label: 'Profile', path: currentUser ? '/profile' : '/sign-in' },
   ];
@@ -30,8 +30,8 @@ export default function BottomNav() {
               key={item.label}
               to={item.path}
               className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${item.highlight
-                  ? 'text-emerald-600'
-                  : active ? 'text-emerald-700' : 'text-gray-400'
+                ? 'text-emerald-600'
+                : active ? 'text-emerald-700' : 'text-gray-400'
                 }`}
             >
               <div className="relative">

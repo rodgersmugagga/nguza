@@ -29,6 +29,7 @@ const Wishlist = lazy(() => import('./pages/Wishlist'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const RegisterVendor = lazy(() => import('./pages/RegisterVendor'));
 const AdminProductModeration = lazy(() => import('./pages/AdminProductModeration'));
+const AuthSuccess = lazy(() => import('./pages/AuthSuccess'));
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/sign-up" element={<SignUp />} />
+              <Route path="/auth-success" element={<AuthSuccess />} />
               <Route path="/about" element={<About />} />
               <Route path="/search" element={<Search />} />
               <Route path="/category/:categoryKey" element={<CategoryPage />} />

@@ -45,7 +45,7 @@ export const createProduct = async (req, res, next) => {
       const uploadPromises = req.files.map(async (file) => {
         const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
         const result = await cloudinary.uploader.upload(dataUri, {
-          folder: 'Nguza_products',
+          folder: 'Nguzza_products',
           transformation: [{ width: 1200, height: 800, crop: 'limit', quality: 'auto:good' }],
         });
         return { url: result.secure_url || result.url, public_id: result.public_id };
@@ -100,7 +100,7 @@ export const uploadProductImages = async (req, res, next) => {
     const uploadPromises = req.files.map(async (file) => {
       const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
       const result = await cloudinary.uploader.upload(dataUri, {
-        folder: 'Nguza_products',
+        folder: 'Nguzza_products',
         transformation: [{ width: 1200, height: 800, crop: 'limit', quality: 'auto:good' }],
       });
       return { url: result.secure_url || result.url, public_id: result.public_id };

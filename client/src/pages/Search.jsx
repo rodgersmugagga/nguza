@@ -180,8 +180,8 @@ export default function Search() {
           </div>
         </div>
 
-        {/* Desktop Quick Filters */}
-        <div className="hidden md:flex px-4 py-3 items-center gap-3 border-t border-ui overflow-x-auto scrollbar-hide">
+        {/* Quick Filters */}
+        <div className="flex px-4 py-3 items-center gap-3 border-t border-ui overflow-x-auto scrollbar-hide">
           <select
             value={filters.filters?.district || ''}
             onChange={(e) => {
@@ -189,7 +189,7 @@ export default function Search() {
               dispatch(setFilter({ key: 'subcounty', value: '' }));
               dispatch(setFilter({ key: 'parish', value: '' }));
             }}
-            className="px-3 py-2 border border-ui rounded-lg text-xs sm:text-sm focus-ring cursor-pointer flex-shrink-0"
+            className="px-3 py-2 border border-ui rounded-lg text-xs sm:text-sm focus-ring cursor-pointer flex-shrink-0 bg-white"
           >
             <option value="">All Districts</option>
             {districts.map(d => <option key={d._id || d.name} value={d.name}>{d.name}</option>)}
@@ -198,7 +198,7 @@ export default function Search() {
           <select
             value={filters.sort}
             onChange={(e) => dispatch(setSort(e.target.value))}
-            className="px-3 py-2 border border-ui rounded-lg text-xs sm:text-sm focus-ring cursor-pointer flex-shrink-0"
+            className="px-3 py-2 border border-ui rounded-lg text-xs sm:text-sm focus-ring cursor-pointer flex-shrink-0 bg-white"
           >
             <option value="-createdAt">Newest First</option>
             <option value="relevance">Relevance</option>

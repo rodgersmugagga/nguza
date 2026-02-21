@@ -13,12 +13,23 @@ import Product from './models/product.model.js';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
+import session from 'express-session';
+import passport from './config/passport.js';
 import compressionMiddleware from './middlewares/compression.js';
 import { cacheMiddleware } from './middlewares/cache.js';
 import imageOptimizationMiddleware from './middlewares/imageOptimization.js';
 
 dotenv.config();
 const app = express();
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'nguza_secret_key_12345',
+  resave: false,
+  saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // CORS – must be BEFORE helmet so preflight (OPTIONS) responses include proper headers
 app.use(cors({

@@ -1,13 +1,19 @@
 import express from 'express';
-import { signin, signup, google, signout } from '../controllers/auth.controller.js';
+import jwt from 'jsonwebtoken';
+import { signin, signup, google, signout, googleCallback } from '../controllers/auth.controller.js';
+
+import passport from 'passport';
 
 const router = express.Router();
-
-
 
 router.post("/signup", signup);
 router.post("/signin", signin);
 router.get("/signout", signout);
-router.post("/google", google); // Reuse signin controller for Google OAuth 
+
+// Google OAuth routes
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/login" }), googleCallback);
+
+router.post("/google", google); // Keep existing for backward compatibility if needed
 
 export default router;

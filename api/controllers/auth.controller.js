@@ -197,6 +197,37 @@ export const google = async (req, res, next) => {
 
 
 
+// Google OAuth callback success handler
+export const googleCallback = async (req, res, next) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/sign-in?error=auth_failed`);
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { user: { id: user._id, isAdmin: user.isAdmin } },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    // Extract user data minus password
+    const { password, ...userData } = user._doc;
+
+    // Redirect to frontend with token and user data
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const userJson = encodeURIComponent(JSON.stringify(userData));
+
+    // Using query parameters to pass auth data to the frontend handler
+    res.redirect(`${clientUrl}/auth-success?token=${token}&user=${userJson}`);
+  } catch (error) {
+    console.error('Google Callback error:', error);
+    next(error);
+  }
+};
+
+
 //user Signout controller
 export const signout = (req, res, next) => {
 

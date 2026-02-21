@@ -44,13 +44,13 @@ function ScrollRow({ children, className = '' }) {
   };
   return (
     <div className={`relative group/scroll ${className}`}>
-      <button onClick={() => scroll(-1)} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-lg rounded-full p-2 text-gray-600 hover:text-emerald-700 opacity-0 group-hover/scroll:opacity-100 transition-opacity -translate-x-1/2 hidden sm:block">
+      <button onClick={() => scroll(-1)} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-lg rounded-full p-2 text-gray-600 hover:text-emerald-700 opacity-0 group-hover/scroll:opacity-100 transition-opacity -translate-x-1/2">
         <FaChevronLeft />
       </button>
       <div ref={ref} className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 px-1">
         {children}
       </div>
-      <button onClick={() => scroll(1)} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-lg rounded-full p-2 text-gray-600 hover:text-emerald-700 opacity-0 group-hover/scroll:opacity-100 transition-opacity translate-x-1/2 hidden sm:block">
+      <button onClick={() => scroll(1)} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 shadow-lg rounded-full p-2 text-gray-600 hover:text-emerald-700 opacity-0 group-hover/scroll:opacity-100 transition-opacity translate-x-1/2">
         <FaChevronRight />
       </button>
     </div>
@@ -72,6 +72,7 @@ export default function Home() {
 
   const SITE_URL = import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://nguza.onrender.com');
 
+  const { currentUser } = useSelector((state) => state.user);
   const { featured, items, status } = useSelector(s => s.products || { featured: [], items: [], status: 'idle' });
 
   useEffect(() => {
@@ -104,21 +105,38 @@ export default function Home() {
         <link rel="canonical" href={SITE_URL + '/'} />
       </Helmet>
 
+      {/* Mobile-Only Action Banner */}
+      <section className="sm:hidden px-4 py-4 mt-2">
+        <div className="bg-gradient-to-r from-emerald-800 to-emerald-600 rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden">
+          <div className="relative z-10">
+            <h2 className="text-xl font-black leading-tight mb-2">Have something to sell?</h2>
+            <p className="text-xs text-emerald-100 mb-4 opacity-90 font-medium">Join thousands of farmers making money on Nguza.</p>
+            <Link
+              to={currentUser ? (currentUser.user?.role === 'seller' ? "/add-product" : "/register-vendor") : "/sign-in"}
+              className="bg-amber-400 text-emerald-900 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest inline-block shadow-lg active:scale-95 transition-all"
+            >
+              + Post Your Product
+            </Link>
+          </div>
+          <div className="absolute right-[-10%] bottom-[-20%] text-8xl opacity-10 rotate-12">🚜</div>
+        </div>
+      </section>
+
       {/* Mobile-Only Category Icons */}
-      <section className="sm:hidden bg-white border-b border-gray-100 py-3 mb-2 px-4 overflow-x-auto scrollbar-hide">
-        <div className="flex gap-6 min-w-max">
+      <section className="sm:hidden bg-white border-y border-gray-100 py-6 mb-2 mt-4 px-4 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-8 min-w-max px-2">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             return (
               <button
                 key={cat.key}
                 onClick={() => handleCategoryClick(cat.key)}
-                className="flex flex-col items-center gap-1.5"
+                className="flex flex-col items-center gap-3 transition-transform active:scale-90"
               >
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-sm border border-emerald-100">
+                <div className="w-14 h-14 rounded-3xl bg-gray-50 text-emerald-600 flex items-center justify-center text-2xl shadow-sm border border-gray-100">
                   <Icon />
                 </div>
-                <span className="text-[10px] font-bold text-gray-600 uppercase tracking-tighter whitespace-nowrap">{cat.title}</span>
+                <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">{cat.title.split(' ')[0]}</span>
               </button>
             );
           })}
@@ -129,8 +147,8 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:pt-4 sm:pb-2">
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_240px] gap-4">
 
-          {/* Left Category Menu (Desktop Only) */}
-          <div className="hidden lg:block bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden self-start">
+          {/* Left Category Menu */}
+          <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden self-start">
             <div className="bg-emerald-800 text-white px-5 py-4 font-black text-xs uppercase tracking-widest flex items-center gap-3">
               <FaSeedling className="text-amber-400" /> Categories
             </div>
@@ -187,8 +205,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Promo Panel (Desktop Only) */}
-          <div className="hidden lg:flex flex-col gap-4">
+          {/* Right Promo Panel */}
+          <div className="flex flex-col sm:flex-row lg:flex-col gap-4">
             <div className="bg-amber-500 rounded-3xl p-6 text-white flex-1 flex flex-col justify-between shadow-premium relative overflow-hidden group border border-amber-400">
               <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000"></div>
               <div className="z-10">
@@ -285,7 +303,7 @@ export default function Home() {
               </div>
               {activeCat || 'Trending Products'}
             </h2>
-            <Link to="/search" className="hidden sm:flex text-emerald-700 font-black text-xs uppercase tracking-widest hover:text-emerald-800 transition-colors items-center gap-2 group">
+            <Link to="/search" className="text-emerald-700 font-black text-xs uppercase tracking-widest hover:text-emerald-800 transition-colors items-center gap-2 group">
               Browse More <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

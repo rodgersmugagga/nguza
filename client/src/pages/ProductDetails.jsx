@@ -216,7 +216,7 @@ export default function ProductDetails() {
               </div>
 
               {!isOwner && (
-                <div className="space-y-4 relative z-10 hidden sm:block">
+                <div className="space-y-4 relative z-10">
                   <button onClick={() => setContact(!contact)} className="btn-primary w-full py-4 tracking-widest uppercase text-xs flex gap-2">
                     <FaWhatsapp className="text-lg" /> Contact Seller
                   </button>

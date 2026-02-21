@@ -53,8 +53,8 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 shadow-sm">
-      {/* ─── Top Bar (Desktop Only) ─── */}
-      <div className="hidden sm:block bg-emerald-900 text-white">
+      {/* ─── Top Bar ─── */}
+      <div className="bg-emerald-900 text-white">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-[11px] py-1.5 font-medium tracking-wide">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-emerald-300">
@@ -114,14 +114,16 @@ export default function Header() {
           {/* Search Bar - Full width on mobile */}
           <form onSubmit={handleSubmit} className="w-full flex-1 max-w-2xl relative">
             <div className="flex items-stretch rounded-xl overflow-hidden bg-white shadow-soft focus-within:ring-2 focus-within:ring-amber-400 transition-all">
-              {/* Category Dropdown (Desktop Only) */}
-              <div ref={catRef} className="relative hidden md:block">
+              {/* Category Dropdown */}
+              <div ref={catRef} className="relative">
                 <button
                   type="button"
                   onClick={() => setShowCatDropdown(!showCatDropdown)}
                   className="h-full px-4 bg-gray-50 border-r border-gray-100 text-gray-600 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-gray-100 transition-colors"
                 >
-                  {searchCategory} <FaChevronDown className="text-[8px]" />
+                  <span className="hidden sm:inline">{searchCategory}</span>
+                  <span className="sm:hidden">{searchCategory.split(' ')[0]}</span>
+                  <FaChevronDown className="text-[8px]" />
                 </button>
                 {showCatDropdown && (
                   <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 min-w-[180px] animate-in">
@@ -231,7 +233,7 @@ export default function Header() {
           </div>
 
           <Link
-            to={currentUser?.user?.role === 'seller' ? "/add-product" : "/register-vendor"}
+            to={currentUser ? (currentUser.user?.role === 'seller' ? "/add-product" : "/register-vendor") : "/sign-in"}
             className="ml-auto px-4 py-3 bg-amber-400 text-emerald-900 hover:bg-amber-500 text-[11px] font-black uppercase tracking-widest transition-colors whitespace-nowrap shadow-xl"
           >
             {currentUser?.user?.role === 'seller' ? "+ Post Product" : "Start Selling"}

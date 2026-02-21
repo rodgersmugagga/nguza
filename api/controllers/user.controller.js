@@ -30,7 +30,7 @@ export const updateUser = async (req, res) => {
       const b64 = req.file.buffer.toString('base64');
       const dataUri = `data:${mime};base64,${b64}`;
       const result = await cloudinary.uploader.upload(dataUri, {
-        folder: 'nguza_avatars',
+        folder: 'nguzza_avatars',
         transformation: [{ width: 400, height: 400, crop: 'limit' }],
       });
       updateData.avatar = result.secure_url;
